@@ -29,11 +29,12 @@ insert into sys_user(user_name, password, salt, user_type) values ('root', 'root
 
 
 create view if not exists sys_user_view as
-select id,
+select sys_user.id as id,
        user_name,
        password,
        salt,
-       user_type from sys_user join user_type ut on sys_user.user_type = ut.id;
+       ut.user_type
+from sys_user join user_type ut on sys_user.user_type = ut.id;
 
 
 create table login_cookie(
