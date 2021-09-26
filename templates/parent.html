@@ -8,10 +8,22 @@
 
     {% block title %}
     {% endblock %}
+
+
+
+    <link  rel="stylesheet"   href="{{ url_for('static', filename='libraries/bootstrap/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='libraries/bootstrap/bootstrap.bundle.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='libraries/bootstrap/bootstrap.min.css') }} "></script>
+    <script src="{{ url_for('static', filename='libraries/bootstrap/popper.min.js') }} "></script>
+
+
 </head>
     <body>
+    <div class="container">
         {% block body %}
             //content will be here
         {% endblock %}
+    </div>
+
     </body>
 </html>

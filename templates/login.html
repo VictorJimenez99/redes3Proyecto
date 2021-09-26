@@ -5,10 +5,21 @@
 {% endblock %}
 
 {% block body %}
-    <form action = "/set_cookie" method = "post">
-        <p><h3>enter userid {{ user }}</h3></p>
-        <p><input type = 'text' name = 'nm'/></p>
-        <p><input type = 'submit' value = 'login'/></p>
+    <form>
+        <div class="mb-3">
+            <label for="user_name" class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-control" id="user_name" aria-describedby="user_name_help">
+            <div id="user_name_help" class="form-text">Escribe tu nombre de usuariio</div>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1">
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 {% endblock %}
 
