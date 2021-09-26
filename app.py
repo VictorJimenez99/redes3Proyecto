@@ -16,7 +16,7 @@ def set_cookie():  # put application's code here
     user = "Vic"
     if request.method == 'POST':
         user = request.form['nm']
-    resp = make_response(render_template("main_page.html", user_name = "Victor"))
+    resp = make_response(render_template("main_page.html", user_name = user))
     resp.set_cookie('login', user)
     return resp
 
