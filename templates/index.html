@@ -5,11 +5,9 @@
 {% endblock %}
 
 {% block body %}
-    <form action = "/set_cookie" method = "post">
-        <p><h3>enter userid from _ roout {{ user }}</h3></p>
-        <p><input type = 'text' name = 'nm'/></p>
-        <p><input type = 'submit' value = 'login'/></p>
-    </form>
+    <h2>Administración de Servicios en Red (Proyectos)</h2>
+
+    <a href="{{ url_for('login') }} ">Login</a>
 {% endblock %}
 
 
