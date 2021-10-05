@@ -12,6 +12,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db.init_app(app)
 
 
+
+
 @app.route('/')
 def index():
     return render_template("index.html")
@@ -43,8 +45,9 @@ def has_cookie():
 @app.route('/test_db')
 def test_db():
     try:
-        val = SysUser.check_user_exists('root')
-        return f'<h1> It works {str(val)} </h1>'
+        test = SysUser.validate_credentials("root", "root")
+        print(test)
+        return f'<h1> It works {str(test)} </h1>'
     except Exception as e:
         # e holds description of the error
         error_text = "<p>The error:<br>" + str(e) + "</p>"

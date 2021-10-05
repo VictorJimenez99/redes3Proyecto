@@ -25,7 +25,9 @@ create table sys_user(
                      foreign key(user_type) references user_type(id)
 );
 
-insert into sys_user(user_name, password, salt, user_type) values ('root', 'root', 'salt', 1);
+insert into sys_user(user_name, password, salt, user_type) values ('root',
+                                                                   '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',
+                                                                   'salt', 1);
 
 
 create view if not exists sys_user_view as
