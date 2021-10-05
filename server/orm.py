@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sha3 import sha3_512
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
@@ -12,6 +14,8 @@ class SysUser(db.Model):
     password = db.Column(db.String)
     salt = db.Column(db.String)
 
+    cookie = relationship("LoginCookie", back_populates="owner_rel")
+
     def __repr__(self):
         return f"user {self.id}:\n\tname:{self.user_name}\n\tpassword:{self.salt}\n\tsalt:{self.salt}"
 
@@ -21,20 +25,45 @@ class SysUser(db.Model):
         return len(values) == 1
 
     @staticmethod
-    def validate_credentials(_user_name, _password):
+    def get_user_by_name(_user_name: str):
+        values:[] = SysUser.query.filter_by(user_name=_user_name).all()
+        return values[0]
+
+    @staticmethod
+    def validate_credentials(_user_name: str, _password: str):
         user: [] = SysUser.query.filter_by(user_name=_user_name).all()
         if len(user) == 0:
             return False
         # valid user_name
         user: SysUser = user[0]
         test_password: str = _password + user.salt
-        print(test_password)
-        encrypted_tet = sha3_512(test_password.encode('utf-8')).hexdigest()
-        print(encrypted_tet)
-        return encrypted_tet
+        encrypted_test = sha3_512(test_password.encode('utf-8')).hexdigest()
+        if user.password == encrypted_test:
+            return True
+        else:
+            return False
+
 
 
 # Login Cookie Table ------------------------------------------------
 class LoginCookie(db.Model):
     __tablename__ = 'login_cookie'
-    cookie = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    cookie = db.Column(db.String, nullable=False)
+    expiration_date = db.Column(db.Integer, nullable=False)
+    owner = db.Column(db.Integer, ForeignKey('sys_user.id'))
+
+    owner_rel = relationship("SysUser", uselist=False)
+
+
+    def __repr__(self):
+        return f"cookie {self.id}_{self.cookie}: \n\towner: {self.owner}\n\tvalid until: {self.expiration_date}"
+
+    @staticmethod
+    def new_cookie(cookie: str, owner: SysUser):
+        value = LoginCookie(cookie=cookie, expiration_date=0)
+        value.owner = owner.id
+        print(value)
+        db.session.add(value)
+        db.session.commit()
+
