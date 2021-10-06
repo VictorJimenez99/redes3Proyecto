@@ -17,7 +17,7 @@ $(document).ready(function () {
             contentType: "application/json; charset=utf-8",
             traditional: true,
             success: function (data) {
-                console.log(data)
+                 $(location).attr('href', '/');
             },
             error: function (xhr) {
                 alert('Request Status: ' + xhr.status + ' Status Text: ' + xhr.statusText + ' ' + xhr.responseText);

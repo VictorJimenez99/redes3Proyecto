@@ -1,6 +1,6 @@
 from time import time
 
-from flask import Flask, render_template, make_response, request
+from flask import Flask, render_template, make_response, request, redirect
 from server.orm import db, SysUser, LoginCookie
 from server.random import random_word
 from server.session import has_valid_session
@@ -17,12 +17,18 @@ db.init_app(app)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    if has_valid_session(request):
+        return render_template("logged_index.html")
+    else:
+        return render_template("index.html")
 
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    if has_valid_session(request):
+        return redirect("/")
+    else:
+        return render_template("login.html")
 
 
 @app.route('/create_session', methods=["POST"])
