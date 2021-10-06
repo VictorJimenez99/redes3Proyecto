@@ -1,6 +1,5 @@
 from flask import Flask, render_template, make_response, request
-from server.orm import db, SysUser
-from flask_sqlalchemy import SQLAlchemy
+from server.orm import db, SysUser, LoginCookie
 
 app = Flask(__name__)
 
@@ -24,16 +23,21 @@ def login():
     return render_template("login.html")
 
 
-@app.route('/set_cookie', methods=["POST"])
+@app.route('/create_session', methods=["POST"])
 def set_cookie():
-    # put application's code here
-    # return render_template("index.html")
-    user = "Vic"
-    if request.method == 'POST':
-        user = request.form['nm']
-    resp = make_response(render_template("main_page.html", user_name=user))
-    resp.set_cookie('login', user)
-    return resp
+    if request.method != 'POST':
+        return "not a post method"
+    if not request.is_json:
+        return "not json"
+    payload: dict = request.get_json(force=True)
+    user_name = payload.get("name")
+    password = payload.get("password")
+    if SysUser.validate_credentials(user_name, password):
+        user = SysUser.get_user_by_name(user_name)
+        LoginCookie.new_cookie("value:1", user)
+
+
+    return "Ok"
 
 
 @app.route('/check_cookie')
@@ -46,7 +50,7 @@ def has_cookie():
 def test_db():
     try:
         test = SysUser.validate_credentials("root", "root")
-        print(test)
+        #print(test)
         return f'<h1> It works {str(test)} </h1>'
     except Exception as e:
         # e holds description of the error
