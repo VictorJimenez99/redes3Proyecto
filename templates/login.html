@@ -21,9 +21,12 @@
     <script src="../static/assets/vendor/purecounter/purecounter.js"></script>
     <script src="../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
     <script src="../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="../static/assets/vendor/jquery/jquery-3.6.0.min.js"></script>
 
     <!-- Template Main JS File -->
     <script src="../static/assets/js/index.js"></script>
+
+    <script src="../static/assets/js/login.js"></script>
 {% endblock %}
 
 
@@ -44,15 +47,15 @@
 
 
           <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form">
+            <form action="" method="post" class="php-email-form">
               <div class="row gy-4">
 
                 <div class="col-md-12">
-                  <input type="text" name="name" class="form-control" placeholder="Nombre de Usuario" required>
+                  <input  id="nombre" type="text" name="name" class="form-control" placeholder="Nombre de Usuario" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="password" class="form-control" name="subject" placeholder="Password" required>
+                  <input id="password" type="password" class="form-control" name="subject" placeholder="Password" required>
                 </div>
 
                 <div class="col-md-12 text-center">
@@ -60,7 +63,7 @@
                   <div class="error-message"></div>
                   <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                  <button type="submit">Iniciar Sesión</button>
+                  <button type="button" id="inicia_sesion">Iniciar Sesión</button>
                 </div>
 
               </div>

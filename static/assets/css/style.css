@@ -283,7 +283,7 @@ section {
 }
 
 /**
-* Mobile Navigation 
+* Mobile Navigation
 */
 .mobile-nav-toggle {
   color: #012970;
@@ -1561,7 +1561,7 @@ section {
 .login .php-email-form textarea {
   padding: 12px 15px;
 }
-.login .php-email-form button[type=submit] {
+.login .php-email-form button[type=button] {
   background: #e27846;
   border: 0;
   padding: 10px 30px;
@@ -1569,7 +1569,7 @@ section {
   transition: 0.4s;
   border-radius: 4px;
 }
-.login .php-email-form button[type=submit]:hover {
+.login .php-email-form button[type=button]:hover {
   background: #a83600;
 }
 @-webkit-keyframes animate-loading {
