@@ -27,6 +27,8 @@ class SysUser(db.Model):
     @staticmethod
     def get_user_by_name(_user_name: str):
         values:[] = SysUser.query.filter_by(user_name=_user_name).all()
+        if len(values) == 0:
+            return []
         return values[0]
 
     @staticmethod
@@ -66,4 +68,17 @@ class LoginCookie(db.Model):
         print(value)
         db.session.add(value)
         db.session.commit()
+
+    @staticmethod
+    def find_cookie_by_value(cookie: str):
+        values:[] = LoginCookie.query.filter_by(cookie=cookie).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+
+    @staticmethod
+    def update_cookie(cookie_old_val: str, new_value: str):
+        cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_old_val)
+        setattr(cookie, "cookie", new_value)
+
 

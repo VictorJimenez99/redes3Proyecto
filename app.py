@@ -1,5 +1,9 @@
+from time import time
+
 from flask import Flask, render_template, make_response, request
 from server.orm import db, SysUser, LoginCookie
+from server.random import random_word
+from server.session import has_valid_session
 
 app = Flask(__name__)
 
@@ -9,8 +13,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db.init_app(app)
-
-
 
 
 @app.route('/')
@@ -26,18 +28,31 @@ def login():
 @app.route('/create_session', methods=["POST"])
 def set_cookie():
     if request.method != 'POST':
-        return "not a post method"
+        return "not a post method", 400
     if not request.is_json:
-        return "not json"
+        return "not json", 415
+
+    if has_valid_session(request):
+        return "Already Reported", 208
+
     payload: dict = request.get_json(force=True)
     user_name = payload.get("name")
     password = payload.get("password")
+    user: SysUser = SysUser()
     if SysUser.validate_credentials(user_name, password):
         user = SysUser.get_user_by_name(user_name)
-        LoginCookie.new_cookie("value:1", user)
+    else:
+        return "Invalid_Credentials", 418
 
+    random_string = random_word(15)
 
-    return "Ok"
+    cookie = f"{user.user_name}{random_string}{int(time())}"
+    LoginCookie.new_cookie(cookie, user)
+
+    response = make_response("")
+    response.set_cookie("access_key", cookie)
+
+    return response, 200
 
 
 @app.route('/check_cookie')
@@ -50,7 +65,7 @@ def has_cookie():
 def test_db():
     try:
         test = SysUser.validate_credentials("root", "root")
-        #print(test)
+        # print(test)
         return f'<h1> It works {str(test)} </h1>'
     except Exception as e:
         # e holds description of the error
