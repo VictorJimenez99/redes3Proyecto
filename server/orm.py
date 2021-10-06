@@ -65,7 +65,6 @@ class LoginCookie(db.Model):
     def new_cookie(cookie: str, owner: SysUser):
         value = LoginCookie(cookie=cookie, expiration_date=0)
         value.owner = owner.id
-        print(value)
         db.session.add(value)
         db.session.commit()
 
