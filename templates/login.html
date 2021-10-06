@@ -4,23 +4,76 @@
     <title>Login</title>
 {% endblock %}
 
+{% block sourcescss %}
+    <link href="../static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="../static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="../static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="../static/assets/css/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block sourcesjs %}
+    <script src="../static/assets/vendor/aos/aos.js"></script>
+    <script src="../static/assets/vendor/php-email-form/validate.js"></script>
+    <script src="../static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="../static/assets/vendor/purecounter/purecounter.js"></script>
+    <script src="../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="../static/assets/js/index.js"></script>
+{% endblock %}
+
+
 {% block body %}
-    <form>
-        <div class="mb-3">
-            <label for="user_name" class="form-label">Nombre de usuario</label>
-            <input type="text" class="form-control" id="user_name" aria-describedby="user_name_help">
-            <div id="user_name_help" class="form-text">Escribe tu nombre de usuariio</div>
+
+
+    <section id="contact" class="login d-flex align-items-center">
+
+      <div class="container" data-aos="fade-up">
+
+        <header class="section-header">
+          <h2>VICERI</h2>
+          <p>Administración de Servicios en Red (Proyectos)</p>
+        </header>
+
+        <div class="row justify-content-center">
+
+
+
+          <div class="col-lg-6">
+            <form action="forms/contact.php" method="post" class="php-email-form">
+              <div class="row gy-4">
+
+                <div class="col-md-12">
+                  <input type="text" name="name" class="form-control" placeholder="Nombre de Usuario" required>
+                </div>
+
+                <div class="col-md-12">
+                  <input type="password" class="form-control" name="subject" placeholder="Password" required>
+                </div>
+
+                <div class="col-md-12 text-center">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Your message has been sent. Thank you!</div>
+
+                  <button type="submit">Iniciar Sesión</button>
+                </div>
+
+              </div>
+            </form>
+
+          </div>
+
         </div>
-        <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Passwords</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+
+      </div>
+
+    </section><!-- End Contact Section -->
+
 {% endblock %}
 
 

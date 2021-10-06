@@ -6,24 +6,39 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <!-- Favicons -->
+    <link href="../static/assets/img/favicon.png" rel="icon">
+    <link href="../static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
     {% block title %}
     {% endblock %}
 
 
+    <!-- Vendor CSS Files -->
+    <link href="../static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <!-- Vendor JS Files -->
+    <script src="../static/assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="../static/assets/vendor/bootstrap/js/popper.min.js"></script>
 
-    <link  rel="stylesheet"   href="{{ url_for('static', filename='libraries/bootstrap/bootstrap.min.css') }}">
-    <script src="{{ url_for('static', filename='libraries/bootstrap/bootstrap.bundle.min.js') }} "></script>
-    <script src="{{ url_for('static', filename='libraries/bootstrap/bootstrap.min.css') }} "></script>
-    <script src="{{ url_for('static', filename='libraries/bootstrap/popper.min.js') }} "></script>
 
+    {% block sourcescss %}
+
+    {% endblock %}
+
+    {% block sourcesjs %}
+
+    {% endblock %}
 
 </head>
     <body>
-    <div class="container">
         {% block body %}
             //content will be here
         {% endblock %}
-    </div>
+
 
     </body>
 </html>

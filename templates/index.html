@@ -4,10 +4,67 @@
     <title>Login</title>
 {% endblock %}
 
-{% block body %}
-    <h2>Administración de Servicios en Red (Proyectos)</h2>
+{% block sourcescss %}
+    <link href="../static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="../static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="../static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
 
-    <a href="{{ url_for('login') }} ">Login</a>
+    <!-- Template Main CSS File -->
+    <link href="../static/assets/css/style.css" rel="stylesheet">
 {% endblock %}
+
+{% block sourcesjs %}
+    <script src="../static/assets/vendor/aos/aos.js"></script>
+    <script src="../static/assets/vendor/php-email-form/validate.js"></script>
+    <script src="../static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="../static/assets/vendor/purecounter/purecounter.js"></script>
+    <script src="../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="../static/assets/js/index.js"></script>
+{% endblock %}
+
+
+{% block body %}
+
+
+    <!-- ======= Index Section ======= -->
+    <section id="hero" class="hero d-flex align-items-center">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 d-flex flex-column justify-content-center">
+                    <h1 data-aos="fade-up">Administración de Servicios en Red (Proyectos)</h1>
+                    <h2 data-aos="fade-up" data-aos-delay="400">Victor Hugo Jimenez Villa</h2>
+                    <h2 data-aos="fade-up" data-aos-delay="400">Erick Rodriguez Alcantar</h2>
+                    <div data-aos="fade-up" data-aos-delay="600">
+                        <div class="text-center text-lg-start">
+                            <a href="{{ url_for('login') }} "
+                               class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
+                                <span>Iniciar sesión</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-img" data-aos="zoom-out" data-aos-delay="200">
+                    <img src="../static/assets/img/generalBackGround.png" class="img-fluid" alt="">
+                </div>
+            </div>
+        </div>
+
+    </section><!-- Index Hero -->
+
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+{% endblock %}
+
 
 
