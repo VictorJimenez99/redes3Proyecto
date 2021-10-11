@@ -18,6 +18,7 @@ db.init_app(app)
 @app.route('/')
 def index():
     if has_valid_session(request):
+        print("si es valida")
         return render_template("logged_index.html")
     else:
         return render_template("index.html")
@@ -79,6 +80,17 @@ def test_db():
         hed = '<h1>Something is broken.</h1>'
         return hed + error_text
 
+@app.route('/logout', methods=["POST"])
+def logout():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not has_valid_session(request):
+        return "Already logout", 208
+    response = make_response("")
+    value = request.cookies.get('access_key')
+    LoginCookie.logout_cookie(value)
+    response.delete_cookie('access_key')
+    return response, 200
 
 if __name__ == '__main__':
     app.run(debug=True)

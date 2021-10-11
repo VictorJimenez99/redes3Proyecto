@@ -1,8 +1,58 @@
 {% extends "parent.html" %}
 
-{% block body %}
+{% block navbar %}
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
+            <a href="index.html" class="logo d-flex align-items-center">
+                <img src="../static/assets/img/favicon.png" alt="">
+                <span>Viceri</span>
+            </a>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link scrollto active" href="/">Inicio</a></li>
+                    <li class="dropdown"><a href="#"><span>Usuarios app</span> <i class="bi bi-chevron-down"></i></a>
+                        <ul>
+                            <li><a href="#">Lista de usuarios</a></li>
+                            <li><a href="#">Alta de usuarios</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="#"><span>Usuarios router</span> <i class="bi bi-chevron-down"></i></a>
+                        <ul>
+                            <li><a href="#">Lista de usuarios</a></li>
+                            <li><a href="#">Alta de usuarios</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="nav-link scrollto" href="#services">Proto de enrutamiento</a></li>
+                    <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
+                        <ul>
+                            <li><a href="#">Drop Down 1</a></li>
+                            <li class="dropdown"><a href="#"><span>Deep Drop Down</span> <i
+                                    class="bi bi-chevron-right"></i></a>
+                                <ul>
+                                    <li><a href="#">Deep Drop Down 1</a></li>
+                                    <li><a href="#">Deep Drop Down 2</a></li>
+                                    <li><a href="#">Deep Drop Down 3</a></li>
+                                    <li><a href="#">Deep Drop Down 4</a></li>
+                                    <li><a href="#">Deep Drop Down 5</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Drop Down 2</a></li>
+                            <li><a href="#">Drop Down 3</a></li>
+                            <li><a href="#">Drop Down 4</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="getstarted scrollto" id="btn_logout">Cerrar Sesión</a></li>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
+        </div>
+    </header><!-- End Header -->
 
 {% endblock %}
+
 
 

@@ -1,3 +1,5 @@
+from time import time
+
 from flask_sqlalchemy import SQLAlchemy
 from sha3 import sha3_512
 from sqlalchemy import ForeignKey
@@ -26,7 +28,7 @@ class SysUser(db.Model):
 
     @staticmethod
     def get_user_by_name(_user_name: str):
-        values:[] = SysUser.query.filter_by(user_name=_user_name).all()
+        values: [] = SysUser.query.filter_by(user_name=_user_name).all()
         if len(values) == 0:
             return []
         return values[0]
@@ -46,7 +48,6 @@ class SysUser(db.Model):
             return False
 
 
-
 # Login Cookie Table ------------------------------------------------
 class LoginCookie(db.Model):
     __tablename__ = 'login_cookie'
@@ -56,7 +57,6 @@ class LoginCookie(db.Model):
     owner = db.Column(db.Integer, ForeignKey('sys_user.id'))
 
     owner_rel = relationship("SysUser", uselist=False)
-
 
     def __repr__(self):
         return f"cookie {self.id}_{self.cookie}: \n\towner: {self.owner}\n\tvalid until: {self.expiration_date}"
@@ -70,7 +70,7 @@ class LoginCookie(db.Model):
 
     @staticmethod
     def find_cookie_by_value(cookie: str):
-        values:[] = LoginCookie.query.filter_by(cookie=cookie).all()
+        values: [] = LoginCookie.query.filter_by(cookie=cookie).all()
         if len(values) == 0:
             return None
         return values[0]
@@ -80,4 +80,7 @@ class LoginCookie(db.Model):
         cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_old_val)
         setattr(cookie, "cookie", new_value)
 
-
+    @staticmethod
+    def logout_cookie(cookie_val: str):
+        cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_val)
+        setattr(cookie, "expiration_date", int(time()))
