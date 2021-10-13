@@ -67,19 +67,6 @@ def has_cookie():
     value = request.cookies.get('login')
     return f"login {value}"
 
-
-@app.route('/test_db')
-def test_db():
-    try:
-        test = SysUser.validate_credentials("root", "root")
-        # print(test)
-        return f'<h1> It works {str(test)} </h1>'
-    except Exception as e:
-        # e holds description of the error
-        error_text = "<p>The error:<br>" + str(e) + "</p>"
-        hed = '<h1>Something is broken.</h1>'
-        return hed + error_text
-
 @app.route('/logout', methods=["POST"])
 def logout():
     if request.method != 'POST':
@@ -91,6 +78,27 @@ def logout():
     LoginCookie.logout_cookie(value)
     response.delete_cookie('access_key')
     return response, 200
+
+
+@app.route('/add_sys_user', methods=["POST"])
+def add_sys_user():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    user_name = payload.get("new_name")
+    password = payload.get("new_password")
+    if user_name is None or password is None:
+        return "Unable to get params: Expected json with (new_name, new_password)", 406
+    SysUser.add_new_sys_user(user_name, password)
+
+    response = make_response("")
+    return response, 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)

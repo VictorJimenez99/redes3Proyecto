@@ -5,13 +5,15 @@ from sha3 import sha3_512
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
+from server.random import random_word
+
 db = SQLAlchemy()
 
 
 # Sys User Table -----------------------------------------------------
 class SysUser(db.Model):
     __tablename__ = 'sys_user'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String)
     password = db.Column(db.String)
     salt = db.Column(db.String)
@@ -19,7 +21,7 @@ class SysUser(db.Model):
     cookie = relationship("LoginCookie", back_populates="owner_rel")
 
     def __repr__(self):
-        return f"user {self.id}:\n\tname:{self.user_name}\n\tpassword:{self.salt}\n\tsalt:{self.salt}"
+        return f"user {self.id}:\n\tname:{self.user_name}\n\tpassword:{self.password}\n\tsalt:{self.salt}"
 
     @staticmethod
     def check_user_exists(_user_name: str):
@@ -32,6 +34,18 @@ class SysUser(db.Model):
         if len(values) == 0:
             return []
         return values[0]
+
+    @staticmethod
+    def add_new_sys_user(_user_name: str, _password: str):
+        user = SysUser(user_name=_user_name)
+        user.salt = random_word(15)
+
+        salted_password: str = _password + user.salt
+        encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()
+        user.password = encrypted_password
+        print(f"adding new user to db: {user}")
+        db.session.add(user)
+        db.session.commit()
 
     @staticmethod
     def validate_credentials(_user_name: str, _password: str):
