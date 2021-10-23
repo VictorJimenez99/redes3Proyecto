@@ -1,7 +1,7 @@
 from time import time
 
 from flask import Flask, render_template, make_response, request, redirect
-from server.orm import db, SysUser, LoginCookie
+from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterProtocol
 from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
 
@@ -24,6 +24,9 @@ def index():
     else:
         return render_template("index.html")
 
+##################################################################################
+#                               SESSION                                          #
+##################################################################################
 
 # -----------------------------LOGIN----------------------------------------------
 @app.route('/login')
@@ -78,7 +81,9 @@ def set_cookie():
 
     return response, 200
 
-
+##################################################################################
+#                               USERS                                            #
+##################################################################################
 # ----------------------------ADD_SYS_USER----------------------------------------
 @app.route('/add_sys_user', methods=["POST"])
 def add_sys_user():
@@ -154,6 +159,42 @@ def change_password_sys_user():
     LoginCookie.logout_cookie(get_cookie_from_session(request)) # Due to security
     response = make_response("Logged Out")
     return response, 200
+
+
+##################################################################################
+#                               ROUTERS                                          #
+##################################################################################
+@app.route('/add_router', methods=["POST"])
+def add_router():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("name")
+    ip_addr = payload.get("ip_addr")
+    ip_mask = payload.get("mask")
+    protocol = payload.get("protocol")
+    if name is None or ip_addr is None or ip_mask is None or protocol is None:
+        return "Unable to get params: Expected json with (name, ip_addr, mask, protocol)", 406
+    possible_duplication = Router.get_router_by_ip(ip_addr)
+    if possible_duplication:
+        return "Duplicated router; cannot add new router", 409
+
+    Router.new_router(name, ip_addr, ip_mask, protocol)
+
+    response = make_response("")
+    return response, 200
+
+
+
+
+
+
+
 
 
 # ----------------------------------MAIN ---------------------------------------------
