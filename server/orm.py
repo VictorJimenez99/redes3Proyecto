@@ -171,6 +171,11 @@ class Router(db.Model):
         if len(values) == 0:
             return []
         return values[0]
+    def get_router_by_ip(_ip: int):
+        values: [] = Router.query.filter_by(ip=_ip).all()
+        if len(values) == 0:
+            return []
+        return values[0]
     @staticmethod
     def get_router_all():
         values: [] = Router.query.all()

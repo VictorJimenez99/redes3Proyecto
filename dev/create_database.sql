@@ -52,7 +52,7 @@ create table router
 (
     id       integer not null primary key default 0,
     user_name     text    not null             default 'no name',
-    ip_addr       text    not null             default '0.0.0.0',
+    ip_addr       text    not null  unique           default '0.0.0.0',
     ip_mask  text    not null             default '255.255.255.0',
     protocol text    not null
 );
