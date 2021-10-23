@@ -51,13 +51,13 @@ create table router_user
 create table router
 (
     id       integer not null primary key default 0,
-    name     text    not null             default 'no name',
+    user_name     text    not null             default 'no name',
     ip_addr       text    not null             default '0.0.0.0',
     ip_mask  text    not null             default '255.255.255.0',
-    procotol text    not null
+    protocol text    not null
 );
 
 create table router_procotol(
     id integer not null primary key default 0,
-    name text not null
+    protocol_name text not null
 )

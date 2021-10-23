@@ -44,7 +44,6 @@ class SysUser(db.Model):
             return []
         return values[0]
 
-
     @staticmethod
     def add_new_sys_user(_user_name: str, _password: str):
         user = SysUser(user_name=_user_name)
@@ -70,7 +69,6 @@ class SysUser(db.Model):
         encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()
         setattr(self, "password", encrypted_password)
         db.session.commit()
-
 
     @staticmethod
     def validate_credentials(_user_name: str, _password: str):
@@ -132,3 +130,109 @@ class LoginCookie(db.Model):
         user_id = cookie.owner
         user = SysUser.get_user_by_id(user_id)
         return user
+
+
+# Router Table ------------------------------------------------
+
+class Router(db.Model):
+    __table_name__ = 'router'
+
+    id = db.column(db.Integer, primary_key=True)
+    router_name = db.column(db.String, nullable=False)
+    id_addr = db.column(db.String, nullable=False)
+    ip_mask = db.column(db.String, nullable=False)
+    protocol = db.column(db.String, nullable=False)
+
+    @staticmethod
+    def new_router(router_name: str, ip_addr: str, ip_mask: str, protocol: str):
+        router = Router(router_name=router_name, id_addr=ip_addr, ip_mask=ip_mask, protocol=protocol)
+        print(f"adding new router to db: {router}")
+        db.session.add(router)
+        db.session.commit()
+    def change_name(self, router_name: str):
+        setattr(self,'router_name', router_name)
+        db.session.commit()
+
+    def change_ip_addr(self, ip_addr: str):
+        setattr(self, 'ip_addr', ip_addr)
+        db.session.commit()
+
+    def change_ip_mask(self, ip_mask: str):
+        setattr(self, 'ip_mask', ip_mask)
+        db.session.commit()
+
+    def change_protocol(self, protocol: str):
+        setattr(self, 'protocol', protocol)
+        db.session.commit()
+
+    @staticmethod
+    def get_router_by_id(_id: int):
+        values: [] = Router.query.filter_by(id=_id).all()
+        if len(values) == 0:
+            return []
+        return values[0]
+    @staticmethod
+    def get_router_all():
+        values: [] = Router.query.all()
+        if len(values) == 0:
+            return []
+        return values
+    @staticmethod
+    def drop_router(_id: int):
+        Router.delete.where(id=_id)
+        db.session.commit()
+
+
+
+
+# Router Users  Table ----------------------------------------------
+
+class RouterUser(db.Model):
+    __table_name__ = 'router_user'
+
+    id = db.column(db.Integer, primary_key=True)
+    user_name = db.column(db.String, nullable=False)
+    password = db.column(db.String, nullable=False)
+    salt = db.column(db.String, nullable=False)
+
+    @staticmethod
+    def new_user_router( user_name:str, password:str):
+        user_router = RouterUser(user_name= user_name )
+        user_router.salt = random_word(15)
+        salted_password: str = password + user_router.salt
+        encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()
+        user_router.password = encrypted_password
+        print(f"adding a new user router {user_router}")
+        db.session.add(user_router)
+        db.session.commit()
+    def change_password(self, _password: str):
+        salted_password: str = _password + self.salt
+        encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()
+        setattr(self,"password",encrypted_password)
+        db.session.commit()
+
+    @staticmethod
+    def drop_user_router(_id: int):
+        RouterUser.delete.where(id=_id)
+        db.session.commit()
+
+
+# Protocol   ----------------------------------------------------------
+
+class RouterProtocol(db.Model):
+    __table_name__ = 'router_procotol'
+    id = db.column(db.Integer, primery_key = True)
+    protocol_name = db.column(db.Integer, nullable = False)
+
+    @staticmethod
+    def new_router_protocol(protocol_name:str ):
+        router_protocol = RouterProtocol(protocol_name = protocol_name)
+        db.session.add(router_protocol)
+        db.session.commit()
+
+
+    @staticmethod
+    def drop_router_protocol(_id: int):
+        RouterProtocol.delete.where(id=_id)
+        db.session.commit()
+
