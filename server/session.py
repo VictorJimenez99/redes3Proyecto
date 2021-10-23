@@ -20,3 +20,12 @@ def has_valid_session(request):
         return False
 
     return True
+
+
+def get_cookie_from_session(request):
+    access_key = request.cookies.get("access_key", "empty")
+    if access_key != "empty":
+        return access_key
+    return None
+
+

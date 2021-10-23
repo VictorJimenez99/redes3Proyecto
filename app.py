@@ -3,7 +3,7 @@ from time import time
 from flask import Flask, render_template, make_response, request, redirect
 from server.orm import db, SysUser, LoginCookie
 from server.random import random_word
-from server.session import has_valid_session
+from server.session import has_valid_session, get_cookie_from_session
 
 app = Flask(__name__)
 
@@ -46,6 +46,7 @@ def logout():
     LoginCookie.logout_cookie(value)
     response.delete_cookie('access_key')
     return response, 200
+
 
 
 # -----------------------------CREATE_SESSION--------------------------------------
@@ -103,6 +104,30 @@ def add_sys_user():
     response = make_response("")
     return response, 200
 
+# -----------------------------CHANGE SYS EMAIL -------------------------------------------
+
+
+@app.route('/change_email_sys_user', methods=["POST"])
+def change_email_sys_user():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    email = payload.get("new_email")
+    if email is None:
+        return "Unable to get params: Expected json with (new_name, new_email)", 406
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if user is None:
+        return "Unable to get user_info", 500
+
+    SysUser.add_email(user, email)
+
+    response = make_response("")
+    return response, 200
 
 
 

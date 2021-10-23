@@ -17,11 +17,14 @@ class SysUser(db.Model):
     user_name = db.Column(db.String)
     password = db.Column(db.String)
     salt = db.Column(db.String)
+    email = db.Column(db.String)
 
     cookie = relationship("LoginCookie", back_populates="owner_rel")
 
     def __repr__(self):
-        return f"user {self.id}:\n\tname:{self.user_name}\n\tpassword:{self.password}\n\tsalt:{self.salt}"
+        return \
+            f"user {self.id}:\n\tname:{self.user_name}" \
+            f"\n\tpassword:{self.password}\n\tsalt:{self.salt}\n\temail:{self.email}"
 
     @staticmethod
     def check_user_exists(_user_name: str):
@@ -35,6 +38,13 @@ class SysUser(db.Model):
             return []
         return values[0]
 
+    def get_user_by_id(_user_id: int):
+        values: [] = SysUser.query.filter_by(id=_user_id).all()
+        if len(values) == 0:
+            return []
+        return values[0]
+
+
     @staticmethod
     def add_new_sys_user(_user_name: str, _password: str):
         user = SysUser(user_name=_user_name)
@@ -46,6 +56,13 @@ class SysUser(db.Model):
         print(f"adding new user to db: {user}")
         db.session.add(user)
         db.session.commit()
+
+    @staticmethod
+    def add_email(user, email: str):
+        setattr(user, "email", email)
+        print(f"changed {user}")
+        db.session.commit()
+
 
     @staticmethod
     def validate_credentials(_user_name: str, _password: str):
@@ -93,8 +110,17 @@ class LoginCookie(db.Model):
     def update_cookie(cookie_old_val: str, new_value: str):
         cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_old_val)
         setattr(cookie, "cookie", new_value)
+        db.session.commit()
 
     @staticmethod
     def logout_cookie(cookie_val: str):
         cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_val)
         setattr(cookie, "expiration_date", int(time()))
+        db.session.commit()
+
+    @staticmethod
+    def get_owner(cookie_val: str):
+        cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_val)
+        user_id = cookie.owner
+        user = SysUser.get_user_by_id(user_id)
+        return user

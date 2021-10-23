@@ -9,7 +9,8 @@ create table sys_user(
     id integer primary key not null default 1,
     user_name text unique not null default 'user_name',
     password text not null default 'password',
-    salt text not null default 'salt'
+    salt text not null default 'salt',
+    email text
 );
 
 insert into sys_user(user_name, password, salt) values ('root',
