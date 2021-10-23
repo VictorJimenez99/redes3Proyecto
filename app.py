@@ -176,21 +176,46 @@ def add_router():
     payload: dict = request.get_json(force=True)
     name = payload.get("name")
     ip_addr = payload.get("ip_addr")
-    ip_mask = payload.get("mask")
     protocol = payload.get("protocol")
-    if name is None or ip_addr is None or ip_mask is None or protocol is None:
-        return "Unable to get params: Expected json with (name, ip_addr, mask, protocol)", 406
+    if name is None or ip_addr is None or protocol is None:
+        return "Unable to get params: Expected json with (name, ip_addr, protocol)", 406
     possible_duplication = Router.get_router_by_ip(ip_addr)
     if possible_duplication:
         return "Duplicated router; cannot add new router", 409
 
-    Router.new_router(name, ip_addr, ip_mask, protocol)
+    Router.new_router(name, ip_addr, protocol)
 
     response = make_response("")
     return response, 200
 
 
 
+##################################################################################
+#                               ROUTERS USERS                                          #
+##################################################################################
+@app.route('/add_router_user', methods=["POST"])
+def add_router_user():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        print(get_cookie_from_session(request))
+
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("user_name")
+    password = payload.get("password")
+    if name is None or name is None or password is None:
+        return "Unable to get params: Expected json with (user_name, password)", 406
+    possible_duplication = RouterUser.get_router_user_by_name(name)
+    if possible_duplication:
+        return "Duplicated router user; cannot add new user router", 409
+    RouterUser.new_user_router(name, password)
+
+    response = make_response("")
+    return response, 200
 
 
 

@@ -139,12 +139,11 @@ class Router(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     ip_addr = db.Column(db.String, nullable=False)
-    ip_mask = db.Column(db.String, nullable=False)
     protocol = db.Column(db.String, nullable=False)
 
     @staticmethod
-    def new_router(router_name: str, ip_addr: str, ip_mask: str, protocol: str):
-        router = Router(name=router_name, ip_addr=ip_addr, ip_mask=ip_mask, protocol=protocol)
+    def new_router(router_name: str, ip_addr: str, protocol: str):
+        router = Router(name=router_name, ip_addr=ip_addr, protocol=protocol)
         print(f"adding new router to db: {router}")
         db.session.add(router)
         db.session.commit()
@@ -155,10 +154,6 @@ class Router(db.Model):
 
     def change_ip_addr(self, ip_addr: str):
         setattr(self, 'ip_addr', ip_addr)
-        db.session.commit()
-
-    def change_ip_mask(self, ip_mask: str):
-        setattr(self, 'ip_mask', ip_mask)
         db.session.commit()
 
     def change_protocol(self, protocol: str):
@@ -222,6 +217,11 @@ class RouterUser(db.Model):
     @staticmethod
     def drop_user_router(_id: int):
         RouterUser.delete.where(id=_id)
+        db.session.commit()
+
+    @staticmethod
+    def get_router_user_by_name(_name: str):
+        RouterUser.delete.where(user_name=_name)
         db.session.commit()
 
 
