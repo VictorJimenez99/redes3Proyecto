@@ -48,7 +48,6 @@ def logout():
     return response, 200
 
 
-
 # -----------------------------CREATE_SESSION--------------------------------------
 @app.route('/create_session', methods=["POST"])
 def set_cookie():
@@ -104,7 +103,8 @@ def add_sys_user():
     response = make_response("")
     return response, 200
 
-# -----------------------------CHANGE SYS EMAIL -------------------------------------------
+
+# -----------------------------CHANGE SysUser EMAIL -------------------------------------------
 
 
 @app.route('/change_email_sys_user', methods=["POST"])
@@ -119,42 +119,41 @@ def change_email_sys_user():
     payload: dict = request.get_json(force=True)
     email = payload.get("new_email")
     if email is None:
-        return "Unable to get params: Expected json with (new_name, new_email)", 406
+        return "Unable to get params: Expected json with (new_email)", 406
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if user is None:
         return "Unable to get user_info", 500
 
-    SysUser.add_email(user, email)
+    user.change_email_and_commit(email)
 
     response = make_response("")
     return response, 200
 
 
+# ---------------------------------Change SysUser Password -------------------------------------
 
+@app.route('/change_password_sys_user', methods=["POST"])
+def change_password_sys_user():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
 
+    payload: dict = request.get_json(force=True)
+    new_password = payload.get("new_password")
+    if new_password is None:
+        return "Unable to get params: Expected json with (new_password)", 406
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if user is None:
+        return "Unable to get user_info", 500
 
+    user.change_password_and_commit(new_password)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    LoginCookie.logout_cookie(get_cookie_from_session(request)) # Due to security
+    response = make_response("Logged Out")
+    return response, 200
 
 
 # ----------------------------------MAIN ---------------------------------------------

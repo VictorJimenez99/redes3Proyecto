@@ -57,10 +57,18 @@ class SysUser(db.Model):
         db.session.add(user)
         db.session.commit()
 
-    @staticmethod
-    def add_email(user, email: str):
-        setattr(user, "email", email)
-        print(f"changed {user}")
+    def change_email_and_commit(self, email: str):
+        setattr(self, "email", email)
+        print(f"changed {self}")
+        db.session.commit()
+
+    def change_password_and_commit(self, new_password: str):
+        setattr(self, "salt", random_word(15))
+        db.session.commit()
+
+        salted_password: str = new_password + self.salt
+        encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()
+        setattr(self, "password", encrypted_password)
         db.session.commit()
 
 
