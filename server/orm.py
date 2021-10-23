@@ -3,7 +3,7 @@ from time import time
 from flask_sqlalchemy import SQLAlchemy
 from sha3 import sha3_512
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 
 from server.random import random_word
 
@@ -164,14 +164,14 @@ class Router(db.Model):
     def get_router_by_id(_id: int):
         values: [] = Router.query.filter_by(id=_id).all()
         if len(values) == 0:
-            return []
+            return None
         return values[0]
 
     @staticmethod
     def get_router_by_ip(_ip: str):
         values: [] = Router.query.filter_by(ip_addr=_ip).all()
         if len(values) == 0:
-            return []
+            return None
         return values[0]
 
     @staticmethod
@@ -183,7 +183,8 @@ class Router(db.Model):
 
     @staticmethod
     def drop_router(_id: int):
-        Router.delete.where(id=_id)
+        router = Router.get_router_by_id(_id)
+        db.session.delete(router)
         db.session.commit()
 
 
@@ -216,13 +217,22 @@ class RouterUser(db.Model):
 
     @staticmethod
     def drop_user_router(_id: int):
-        RouterUser.delete.where(id=_id)
+        router_user = RouterUser.get_router_user_by_id(_id)
+        db.session.delete(router_user)
         db.session.commit()
 
     @staticmethod
     def get_router_user_by_name(_name: str):
-        RouterUser.delete.where(user_name=_name)
-        db.session.commit()
+        values: [] = RouterUser.query.filter_by(user_name=_name).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+    @staticmethod
+    def get_router_user_by_id(_id: int):
+        values: [] = RouterUser.query.filter_by(id=_id).all()
+        if len(values) == 0:
+            return None
+        return values[0]
 
 
 # Protocol   ----------------------------------------------------------
@@ -239,6 +249,14 @@ class RouterProtocol(db.Model):
         db.session.commit()
 
     @staticmethod
+    def get_router_user_by_id(_id: int):
+        values: [] = RouterProtocol.query.filter_by(id=_id).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+
+    @staticmethod
     def drop_router_protocol(_id: int):
-        RouterProtocol.delete.where(id=_id)
+        router_protocol = RouterProtocol.get_router_user_by_id(_id)
+        db.session.delete(router_protocol)
         db.session.commit()

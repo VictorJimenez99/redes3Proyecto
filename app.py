@@ -161,6 +161,8 @@ def change_password_sys_user():
     return response, 200
 
 
+
+
 ##################################################################################
 #                               ROUTERS                                          #
 ##################################################################################
@@ -189,6 +191,55 @@ def add_router():
     return response, 200
 
 
+# ---------------------------------Update Router  -------------------------------------
+
+@app.route('/update_router', methods=["POST"])
+def update_router():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    name = payload.get("name")
+    ip_addr = payload.get("ip_addr")
+    protocol = payload.get("protocol")
+    if id is None or name is None or ip_addr is None or protocol is None:
+        return "Unable to get params: Expected json with (id, name, ip_addr, protocol)", 406
+    router: Router = Router.get_router_by_id(id)
+    if router is None:
+        return "Unable to get router_info", 500
+
+    router.change_name(name)
+    router.change_ip_addr(ip_addr)
+    router.change_protocol(protocol)
+    response = make_response("")
+    return response, 200
+
+# ---------------------------------Drop Router User  -------------------------------------
+
+@app.route('/drop_router', methods=["POST"])
+def drop_router():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    if id is None:
+        return "Unable to get params: Expected json with (id)", 406
+    router: Router = Router.get_router_by_id(id)
+    if router is None:
+        return "Unable to get router_user_info", 500
+    router.drop_router(id)
+    response = make_response("")
+    return response, 200
 
 ##################################################################################
 #                               ROUTERS USERS                                          #
@@ -218,8 +269,52 @@ def add_router_user():
     return response, 200
 
 
+# ---------------------------------Update Router User  -------------------------------------
+
+@app.route('/update_router_user', methods=["POST"])
+def update_router_user():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    user_name = payload.get("user_name")
+    password = payload.get("password")
+    if id is None or user_name is None or  password is None:
+        return "Unable to get params: Expected json with (id, user_name, password)", 406
+    router_user: RouterUser = RouterUser.get_router_user_by_id(id)
+    if router_user is None:
+        return "Unable to get router_user_info", 500
+    router_user.change_password(password)
+    response = make_response("")
+    return response, 200
 
 
+# ---------------------------------Drop Router User  -------------------------------------
+
+@app.route('/drop_router_user', methods=["POST"])
+def drop_router_user():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    if id is None:
+        return "Unable to get params: Expected json with (id)", 406
+    router_user: RouterUser = RouterUser.get_router_user_by_id(id)
+    if router_user is None:
+        return "Unable to get router_user_info", 500
+    router_user.drop_user_router(id)
+    response = make_response("")
+    return response, 200
 
 
 # ----------------------------------MAIN ---------------------------------------------

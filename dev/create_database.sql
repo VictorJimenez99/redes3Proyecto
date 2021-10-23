@@ -41,7 +41,7 @@ end;
 
 create table router_user
 (
-    id        integer not null primary key,
+    id        integer not null  primary key autoincrement,
     user_name text    not null default 'no name',
     password  text    not null default 'password',
     salt      text    not null default 'salt'
@@ -50,13 +50,13 @@ create table router_user
 
 create table router
 (
-    id       integer not null primary key default 0,
+    id       integer not null primary key autoincrement default 0,
     name     text  unique  not null             default 'no name',
     ip_addr  text    not null  unique     default '0.0.0.0',
     protocol text    not null
 );
 
 create table router_protocol(
-    id integer not null primary key default 0,
+    id integer not null primary key autoincrement default 0,
     name text not null
 )
