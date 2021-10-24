@@ -33,8 +33,7 @@ class RouterConnection:
         return value
 
     def shutdown_all_protocols(self):
-        instruction_set_shutdown_all_protocols = \
-            ["configure terminal",
+        instruction_set_shutdown_all_protocols = ["configure terminal",
              "no ospf",
              "no rip",
              "clear ip route *",
