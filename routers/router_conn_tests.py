@@ -5,7 +5,7 @@ from router_conn import RouterConnection
 import sys
 import os
 
-sys.path.append(os.path.abspath('../server'))
+sys.path.append(os.path.abspath('../'))
 
 class MyTestCase(unittest.TestCase):
     @staticmethod
