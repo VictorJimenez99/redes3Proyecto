@@ -42,10 +42,14 @@ class RouterConnection:
         self.add_instructions_to_transaction(instruction_set_shutdown_all_protocols)
         self.execute_transaction()
 
-    def configure_rip_protocol(self):
+    def configure_rip_protocol(self, network_array: []):
         self.shutdown_all_protocols()
-        instruction_set_enable_rip = \
-            ["TODO", "instruction"]
+        instruction_set_enable_rip = ["configure terminal", "router rip", "version 2"]
+        result = []
+        for network in network_array:
+            result += f"network {network}"
+        instruction_set_enable_rip += result
+        instruction_set_enable_rip += ["no auto-summary"]
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_enable_rip)
         self.execute_transaction()
