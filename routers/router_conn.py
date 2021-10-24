@@ -50,6 +50,7 @@ class RouterConnection:
         result = []
         for network in network_array:
             result += f"network {network}"
+        print(result)
         instruction_set_enable_rip += result
         instruction_set_enable_rip += ["no auto-summary"]
         self.start_transaction()
