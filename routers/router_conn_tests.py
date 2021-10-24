@@ -1,13 +1,7 @@
-import unittest
-
 from router_conn import RouterConnection
 
-import sys
-import os
 
-sys.path.append(os.path.abspath('../'))
-
-class MyTestCase(unittest.TestCase):
+class RouterTests():
     @staticmethod
     def test_ping_pong():
         conn = RouterConnection("10.0.2.254", "root", "root")
@@ -15,8 +9,4 @@ class MyTestCase(unittest.TestCase):
         conn.add_instructions_to_transaction(["show ip route"])
         value = conn.execute_transaction()
         print(value)
-        assert(1+1, 2)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert (1 + 1, 2)
