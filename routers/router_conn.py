@@ -26,6 +26,7 @@ class RouterConnection:
     def execute_transaction(self):
         value: str = ""
         for instruction in self.transaction_queue:
+            print(instruction)
             ret = self.conn.send_command_timing(instruction)
             value += ret
             print(ret)
