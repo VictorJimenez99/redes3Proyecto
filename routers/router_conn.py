@@ -1,4 +1,5 @@
 from netmiko import ConnectHandler
+from server.orm import RouterUser
 
 
 class RouterConnection:
@@ -20,13 +21,16 @@ class RouterConnection:
         self.transaction_queue = []
 
     def add_instructions_to_transaction(self, instructions: []):
-        self.transaction_queue.append(instructions)
+        self.transaction_queue.append(*instructions)
 
     def execute_transaction(self):
+        value: str = ""
         for instruction in self.transaction_queue:
-            self.conn.send_command(instruction)
+            ret = self.conn.send_command(instruction)
+            value += ret
         self.conn = None
         self.transaction_queue = []
+        return value
 
     def shutdown_all_protocols(self):
         instruction_set_shutdown_all_protocols = \
@@ -57,7 +61,6 @@ class RouterConnection:
             self.conn.send_command(instruction)
         self.conn = None
 
-
     def configure_interface_create_queue(self, interface: str):
         self.start_transaction()
         str1 = f"configure terminal"
@@ -65,6 +68,5 @@ class RouterConnection:
         instructions = [str1, str2]
         self.add_instructions_to_transaction(instructions)
 
-
-
-
+    def add_admin_router_user(self, user: RouterUser):
+        pass
