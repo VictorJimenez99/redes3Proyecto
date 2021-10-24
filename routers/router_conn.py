@@ -49,7 +49,7 @@ class RouterConnection:
         instruction_set_enable_rip = ["configure terminal", "router rip", "version 2"]
         result = []
         for network in network_array:
-            result += f"network {network}"
+            result += [f"network {network}"]
         print(result)
         instruction_set_enable_rip += result
         instruction_set_enable_rip += ["no auto-summary"]
