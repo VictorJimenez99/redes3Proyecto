@@ -70,6 +70,14 @@ class SysUser(db.Model):
         setattr(self, "password", encrypted_password)
         db.session.commit()
 
+    def get_dic_info(self):
+        dic = {
+            "id": self.id,
+            "user_name": self.user_name,
+            "email": self.email,
+        }
+        return dic
+
     @staticmethod
     def validate_credentials(_user_name: str, _password: str):
         user: [] = SysUser.query.filter_by(user_name=_user_name).all()
@@ -227,6 +235,7 @@ class RouterUser(db.Model):
         if len(values) == 0:
             return None
         return values[0]
+
     @staticmethod
     def get_router_user_by_id(_id: int):
         values: [] = RouterUser.query.filter_by(id=_id).all()

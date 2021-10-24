@@ -1,6 +1,6 @@
 from time import time
 
-from flask import Flask, render_template, make_response, request, redirect
+from flask import Flask, render_template, make_response, request, redirect, jsonify
 from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterProtocol
 from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
@@ -84,6 +84,18 @@ def set_cookie():
 ##################################################################################
 #                               USERS                                            #
 ##################################################################################
+
+
+# -----------------------------View SysUser -------------------------------------------
+@app.route('/app_user_pass')
+def app_user():
+    if has_valid_session(request):
+        return render_template("app_user_pass.html")
+    else:
+        return redirect("/")
+
+
+
 # ----------------------------ADD_SYS_USER----------------------------------------
 @app.route('/add_sys_user', methods=["POST"])
 def add_sys_user():
@@ -161,7 +173,22 @@ def change_password_sys_user():
     return response, 200
 
 
+# -----------------------------GET SysUser -------------------------------------------
 
+
+@app.route('/get_sysuser_info', methods=["POST"])
+def get_sysuser_info():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    response = make_response(jsonify(user.get_dic_info()))
+    return response, 200
 
 ##################################################################################
 #                               ROUTERS                                          #
