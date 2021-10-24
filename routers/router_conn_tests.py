@@ -2,6 +2,10 @@ import unittest
 
 from router_conn import RouterConnection
 
+import sys
+import os
+
+sys.path.append(os.path.abspath('../server'))
 
 class MyTestCase(unittest.TestCase):
     @staticmethod
