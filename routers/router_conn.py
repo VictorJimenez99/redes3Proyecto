@@ -26,7 +26,7 @@ class RouterConnection:
     def execute_transaction(self):
         value: str = ""
         for instruction in self.transaction_queue:
-            ret = self.conn.send_command(instruction)
+            ret = self.conn.send_command_timming(instruction)
             value += ret
         self.conn = None
         self.transaction_queue = []
