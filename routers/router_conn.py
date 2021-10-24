@@ -28,6 +28,7 @@ class RouterConnection:
         for instruction in self.transaction_queue:
             ret = self.conn.send_command_timing(instruction)
             value += ret
+            print(ret)
         self.conn = None
         self.transaction_queue = []
         return value

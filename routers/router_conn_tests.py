@@ -30,6 +30,8 @@ class RouterTests:
         conn: RouterConnection = RouterConnection("10.0.2.254", "root", "root")
         value = conn.configure_rip_protocol(["10.0.2.0", "10.0.3.0"])
 
+        print(value)
         conn: RouterConnection = RouterConnection("10.0.3.2", "root", "root")
         value = conn.configure_rip_protocol(["10.0.1.0", "10.0.3.0"])
+        print(value)
 
