@@ -21,38 +21,63 @@ class RouterConnection:
         self.transaction_queue = []
 
     def add_instructions_to_transaction(self, instructions: []):
-        self.transaction_queue.append(*instructions)
+        self.transaction_queue += instructions
 
     def execute_transaction(self):
         value: str = ""
         for instruction in self.transaction_queue:
-            ret = self.conn.send_command(instruction)
+            print(instruction)
+            ret = self.conn.send_command_timing(instruction)
             value += ret
+            print(ret)
         self.conn = None
         self.transaction_queue = []
         return value
 
-    def shutdown_all_protocols(self):
-        instruction_set_shutdown_all_protocols = \
-            ["configure terminal",
-             # TODO
-             "no ospf",
-             "no rip",
-             "exit"]
+    def add_static_ip_route(self, network: (str, str, str)):
+        (ip, mask, next_hop) = network
+        value = f"ip route {ip} {mask} {next_hop}"
+        instruction_set_shutdown_all_protocols = ["configure terminal",
+                                                  value,
+                                                  "exit"]
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_shutdown_all_protocols)
         self.execute_transaction()
 
-    def configure_rip_protocol(self):
-        self.shutdown_all_protocols()
-        instruction_set_enable_rip = \
-            ["TODO", "instruction"]
+    def shutdown_static_ip_route(self, network: (str, str)):
+        (ip, mask) = network
+        value = f"no ip route {ip} {mask}"
+        instruction_set_shutdown_all_protocols = ["configure terminal",
+                                                  value,
+                                                  "exit"]
+        self.start_transaction()
+        self.add_instructions_to_transaction(instruction_set_shutdown_all_protocols)
+        self.execute_transaction()
+
+    def no_ospf(self, id: int):
+        self.start_transaction()
+        self.add_instructions_to_transaction(["configure terminal", f"no router ospf {id}"])
+        self.execute_transaction()
+
+    def no_rip(self):
+        self.start_transaction()
+        self.add_instructions_to_transaction(["configure terminal", "no router rip"])
+        self.execute_transaction()
+
+    def configure_rip_protocol(self, network_array: []):
+        instruction_set_enable_rip = ["configure terminal", "router rip", "version 2"]
+        result = []
+        for network in network_array:
+            result += [f"network {network}"]
+        print(result)
+        instruction_set_enable_rip += result
+        instruction_set_enable_rip += ["no auto-summary", "exit", "exit"]
+
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_enable_rip)
         self.execute_transaction()
 
     def configure_ospf_protocol(self):
-        self.shutdown_all_protocols()
         self.conn: ConnectHandler = ConnectHandler(**self.connector_dict_default)
         instructions = ["configure terminal",
                         # TODO
