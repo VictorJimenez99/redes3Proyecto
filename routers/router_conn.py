@@ -21,7 +21,7 @@ class RouterConnection:
         self.transaction_queue = []
 
     def add_instructions_to_transaction(self, instructions: []):
-        self.transaction_queue.append(*instructions)
+        self.transaction_queue += instructions
 
     def execute_transaction(self):
         value: str = ""
