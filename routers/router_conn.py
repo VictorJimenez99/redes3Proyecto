@@ -33,10 +33,10 @@ class RouterConnection:
         return value
 
     def shutdown_all_protocols(self):
-        instruction_set_shutdown_all_protocols = ["configure terminal",
+        instruction_set_shutdown_all_protocols = ["clear ip route *",
+                                                  "configure terminal",
                                                   "no router ospf 1",
                                                   "no router rip",
-                                                  "clear ip route *",
                                                   "exit"]
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_shutdown_all_protocols)
