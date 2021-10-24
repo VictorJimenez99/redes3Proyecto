@@ -27,7 +27,15 @@ class RouterTests:
         conn: RouterConnection = RouterConnection("10.0.3.2", "root", "root")
         conn.configure_rip_protocol(["10.0.1.0", "10.0.3.0"])
 
+        conn.no_ospf(1)
+        conn.shutdown_static_ip_route(("10.0.2.0", "255.255.255.0"))
+
         conn: RouterConnection = RouterConnection("10.0.2.254", "root", "root")
         conn.configure_rip_protocol(["10.0.2.0", "10.0.3.0"])
+
+        conn.no_ospf(1)
+        conn.shutdown_static_ip_route(("10.0.1.0", "255.255.255.0"))
+
+
 
 
