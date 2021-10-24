@@ -1,7 +1,7 @@
-from router_conn import RouterConnection
+from routers.router_conn import RouterConnection
 
 
-class RouterTests():
+class RouterTests:
     @staticmethod
     def test_ping_pong():
         conn = RouterConnection("10.0.2.254", "root", "root")
