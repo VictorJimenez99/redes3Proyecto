@@ -1,4 +1,6 @@
+
 $(document).ready(function () {
+
 
     let SendInfo = {
 
@@ -25,21 +27,19 @@ $(document).ready(function () {
 
         let password = $("#password").val();
         let email = $("#email").val();
-        if (email!== undefined && email.length > 0 && password !== "nopassword") {
+        if (email!== undefined && email !== oldemail && email.length > 0  && password !== "nopassword") {
             updateEmail(email)
             updatePass(password)
 
         } else {
+            if(email === oldemail && password === "nopassword"){
+                 alert("Nada que modificar")
+            }else
             if (email!== undefined && email.length > 0 && email !== oldemail) {
                 updateEmail(email)
 
-            } else if (email === oldemail) {
-                alert("Nada que modificar")
-            } else {
-                alert("El email ta mal")
             }
             if (password !== "nopassword") {
-
                 updatePass(password)
             }
         }

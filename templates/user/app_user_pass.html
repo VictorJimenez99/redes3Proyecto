@@ -1,32 +1,32 @@
-{% extends "navbar.html" %}
+{% extends "shared/navbar.html" %}
 
 {% block title %}
     <title>Login</title>
 {% endblock %}
 
 {% block sourcescss %}
-    <link href="../static/assets/vendor/aos/aos.css" rel="stylesheet">
-    <link href="../static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-    <link href="../static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-    <link href="../static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
 
     <!-- Template Main CSS File -->
-    <link href="../static/assets/css/style.css" rel="stylesheet">
+    <link href="../../static/assets/css/style.css" rel="stylesheet">
 {% endblock %}
 
 {% block sourcesjs %}
-    <script src="../static/assets/vendor/aos/aos.js"></script>
-    <script src="../static/assets/vendor/php-email-form/validate.js"></script>
-    <script src="../static/assets/vendor/swiper/swiper-bundle.min.js"></script>
-    <script src="../static/assets/vendor/purecounter/purecounter.js"></script>
-    <script src="../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-    <script src="../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
-    <script src="../static/assets/vendor/jquery/jquery-3.6.0.min.js"></script>
+    <script src="../../static/assets/vendor/aos/aos.js"></script>
+    <script src="../../static/assets/vendor/php-email-form/validate.js"></script>
+    <script src="../../static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="../../static/assets/vendor/purecounter/purecounter.js"></script>
+    <script src="../../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="../../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="../../static/assets/vendor/jquery/jquery-3.6.0.min.js"></script>
 
     <!-- Template Main JS File -->
-    <script src="../static/assets/js/index.js"></script>
-
-    <script src="../static/assets/js/appsuser/appuser.js"></script>
+    <script src="../../static/assets/js/index.js"></script>
+    <script src="../../static/assets/js/navbar.js"></script>
+    <script src="../../static/assets/js/appsuser/appuser.js"></script>
 {% endblock %}
 
 
@@ -56,7 +56,8 @@
                             </div>
 
                             <div class="col-md-12">
-                                <input value="nopassword" id="password" type="password" class="form-control" name="subject"
+                                <input value="nopassword" id="password" type="password" class="form-control"
+                                       name="subject"
                                        placeholder="Password" required>
                             </div>
 
@@ -79,6 +80,15 @@
         </div>
 
     </section><!-- End Contact Section -->
+    <script>
+        $(document).ready(function () {
+            clean_navbar();
+            navbar_update(1);
+            navbar_update(2);
+            navbar_update(4);
+
+        });
+    </script>
 
 {% endblock %}
 

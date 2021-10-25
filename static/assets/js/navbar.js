@@ -9,7 +9,7 @@ $(document).ready(function () {
             contentType: "application/json; charset=utf-8",
             traditional: true,
             success: function (data) {
-                 $(location).attr('href', '/');
+                $(location).attr('href', '/');
             },
             error: function (xhr) {
                 alert('Request Status: ' + xhr.status + ' Status Text: ' + xhr.statusText + ' ' + xhr.responseText);
@@ -22,3 +22,21 @@ $(document).ready(function () {
 
 });
 
+
+function clean_navbar() {
+    $("#navbar a").each(function () {
+            $(this).removeClass("active");
+
+    });
+}
+
+function navbar_update(numero) {
+    iter = 0;
+    $("#navbar a").each(function () {
+        if (iter === numero) {
+            console.log("si")
+            $(this).addClass("active");
+        }
+        iter++;
+    });
+}

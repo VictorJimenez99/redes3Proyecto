@@ -38,6 +38,13 @@ class SysUser(db.Model):
             return []
         return values[0]
 
+    @staticmethod
+    def get_all_users():
+        values: [] = SysUser.query.all()
+        if len(values) == 0:
+            return []
+        return values
+
     def get_user_by_id(_user_id: int):
         values: [] = SysUser.query.filter_by(id=_user_id).all()
         if len(values) == 0:
@@ -242,6 +249,13 @@ class RouterUser(db.Model):
         if len(values) == 0:
             return None
         return values[0]
+
+    @staticmethod
+    def get_all_users():
+        values: [] = RouterUser.query.all()
+        if len(values) == 0:
+            return []
+        return values
 
 
 # Protocol   ----------------------------------------------------------

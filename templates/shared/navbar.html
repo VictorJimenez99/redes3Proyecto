@@ -1,25 +1,37 @@
-{% extends "parent.html" %}
+{% extends "shared/parent.html" %}
 
 {% block navbar %}
     <!-- ======= Header ======= -->
     <header id="header" class="header fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
-            <a href="index.html" class="logo d-flex align-items-center">
-                <img src="../static/assets/img/favicon.png" alt="">
+            <a href="/" class="logo d-flex align-items-center">
+                <img src="../../static/assets/img/favicon.png" alt="">
                 <span>Viceri</span>
             </a>
 
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link scrollto active" href="/">Inicio</a></li>
-                    <li class="dropdown"><a href="#"><span>Configuración Users</span> <i class="bi bi-chevron-down"></i></a>
+                    <li class="dropdown"><a href=""><span>Configuración Usuarios</span> <i class="bi bi-chevron-down"></i></a>
                         <ul>
-                            <li><a href="/app_user_pass">Actualizar mi usuario</a></li>
-                            <li><a href="/">Cambiar correo</a></li>
+                            <li class="dropdown"><a href="/app_user_list"><span>Usuarios app</span> <i
+                                    class="bi bi-chevron-right"></i></a>
+                                <ul>
+                                    <li><a href="/app_user_list">Lista de usuarios</a></li>
+                                    <li><a href="/app_user_pass">Actualizar mi usuario</a></li>
+                                    <li><a href="/add_view_sys_user">Nuevo Usuario</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown"><a href="/router_user_list"><span>Usuarios router</span> <i
+                                    class="bi bi-chevron-right"></i></a>
+                                <ul>
+                                    <li><a href="/router_user_list">Lista de usuarios</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
-                    <li class="dropdown"><a href="#"><span>Usuarios router</span> <i class="bi bi-chevron-down"></i></a>
+                    <li class="dropdown"><a href="#"><span>Routers</span> <i class="bi bi-chevron-down"></i></a>
                         <ul>
                             <li><a href="#">Lista de usuarios</a></li>
                             <li><a href="#">Alta de usuarios</a></li>
@@ -44,7 +56,7 @@
                             <li><a href="#">Drop Down 4</a></li>
                         </ul>
                     </li>
-                    <li><a class="getstarted scrollto" id="btn_logout">Cerrar Sesión</a></li>
+                    <li><a class="getstarted scrollto" href="" id="btn_logout">Cerrar Sesión</a></li>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
             </nav><!-- .navbar -->

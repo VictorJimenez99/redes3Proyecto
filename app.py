@@ -24,6 +24,7 @@ def index():
     else:
         return render_template("index.html")
 
+
 ##################################################################################
 #                               SESSION                                          #
 ##################################################################################
@@ -81,19 +82,37 @@ def set_cookie():
 
     return response, 200
 
+
 ##################################################################################
 #                               USERS                                            #
 ##################################################################################
 
 
-# -----------------------------View SysUser -------------------------------------------
+# -----------------------------View SysUser update -------------------------------------------
 @app.route('/app_user_pass')
 def app_user():
     if has_valid_session(request):
-        return render_template("app_user_pass.html")
+        return render_template("user/app_user_pass.html")
     else:
         return redirect("/")
 
+
+# -----------------------------View SysUser update -------------------------------------------
+@app.route('/app_user_list')
+def app_user_list():
+    if has_valid_session(request):
+        users = SysUser.get_all_users()
+        return render_template("user/app_user_list.html", len=len(users), users=users)
+    else:
+        return redirect("/")
+
+# -----------------------------View SysUser add -------------------------------------------
+@app.route('/add_view_sys_user')
+def add_view_sys_user():
+    if has_valid_session(request):
+        return render_template("user/add_view_sys_user.html")
+    else:
+        return redirect("/")
 
 
 # ----------------------------ADD_SYS_USER----------------------------------------
@@ -168,7 +187,7 @@ def change_password_sys_user():
 
     user.change_password_and_commit(new_password)
 
-    LoginCookie.logout_cookie(get_cookie_from_session(request)) # Due to security
+    LoginCookie.logout_cookie(get_cookie_from_session(request))  # Due to security
     response = make_response("Logged Out")
     return response, 200
 
@@ -190,9 +209,16 @@ def get_sysuser_info():
     response = make_response(jsonify(user.get_dic_info()))
     return response, 200
 
+
 ##################################################################################
 #                               ROUTERS                                          #
 ##################################################################################
+
+
+
+
+# ---------------------------------add Router  -------------------------------------
+
 @app.route('/add_router', methods=["POST"])
 def add_router():
     if request.method != 'POST':
@@ -246,6 +272,7 @@ def update_router():
     response = make_response("")
     return response, 200
 
+
 # ---------------------------------Drop Router User  -------------------------------------
 
 @app.route('/drop_router', methods=["POST"])
@@ -268,9 +295,23 @@ def drop_router():
     response = make_response("")
     return response, 200
 
+
 ##################################################################################
-#                               ROUTERS USERS                                          #
+#                               ROUTERS USERS                                    #
 ##################################################################################
+
+# ---------------------------------View List Router User  -------------------------------------
+@app.route('/router_user_list')
+def router_user_list():
+    if has_valid_session(request):
+        users = RouterUser.get_all_users()
+        return render_template("user_router/router_user_list.html", len=len(users), users=users)
+    else:
+        return redirect("/")
+
+
+# ---------------------------------Add Router User  -------------------------------------
+
 @app.route('/add_router_user', methods=["POST"])
 def add_router_user():
     if request.method != 'POST':
@@ -311,7 +352,7 @@ def update_router_user():
     id = payload.get("id")
     user_name = payload.get("user_name")
     password = payload.get("password")
-    if id is None or user_name is None or  password is None:
+    if id is None or user_name is None or password is None:
         return "Unable to get params: Expected json with (id, user_name, password)", 406
     router_user: RouterUser = RouterUser.get_router_user_by_id(id)
     if router_user is None:
