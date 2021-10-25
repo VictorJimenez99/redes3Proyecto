@@ -1,7 +1,7 @@
 from time import time
 
 from flask import Flask, render_template, make_response, request, redirect, jsonify
-from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterProtocol
+from server.orm import db, SysUser, LoginCookie, RouterUser, Router
 from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
 
@@ -105,6 +105,7 @@ def app_user_list():
         return render_template("user/app_user_list.html", len=len(users), users=users)
     else:
         return redirect("/")
+
 
 # -----------------------------View SysUser add -------------------------------------------
 @app.route('/add_view_sys_user')
@@ -213,8 +214,6 @@ def get_sysuser_info():
 ##################################################################################
 #                               ROUTERS                                          #
 ##################################################################################
-
-
 
 
 # ---------------------------------add Router  -------------------------------------
