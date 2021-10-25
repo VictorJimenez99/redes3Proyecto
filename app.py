@@ -4,6 +4,7 @@ from flask import Flask, render_template, make_response, request, redirect, json
 from server.orm import db, SysUser, LoginCookie, RouterUser, Router
 from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
+from routers.router_conn import RouterConnection
 
 app = Flask(__name__)
 
@@ -214,6 +215,41 @@ def get_sysuser_info():
 ##################################################################################
 #                               ROUTERS                                          #
 ##################################################################################
+
+# -------------------------------View Router List -----------------------------------
+
+@app.route('/router_list')
+def router_list():
+    if has_valid_session(request):
+        routers = Router.get_router_all()
+        return render_template("user/app_user_list.html", len=len(routers), users=routers)
+    else:
+        return redirect("/")
+
+
+# --------------------------------- router RIP_V2  -------------------------------------
+
+@app.route('/router/<str:router_ip>/router_rip', methods=["POST"])
+def add_router(router_ip: str):
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    networks = payload.get("networks")
+    ip_addr = router_ip
+    router_user = payload.get("router_user")
+    router_user_password = payload.get("router_user_password")
+    if networks is None or ip_addr is None or router_user is None or router_user_password:
+        return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
+
+    conn = RouterConnection(ip_addr, router_user, router_user_password)
+    value = conn.configure_rip_protocol(networks)
+    response = make_response(value)
+    return response, 200
 
 
 # ---------------------------------add Router  -------------------------------------

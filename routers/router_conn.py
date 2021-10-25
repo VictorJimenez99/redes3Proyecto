@@ -69,13 +69,13 @@ class RouterConnection:
         result = []
         for network in network_array:
             result += [f"network {network}"]
-        print(result)
         instruction_set_enable_rip += result
         instruction_set_enable_rip += ["no auto-summary", "exit", "exit"]
 
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_enable_rip)
-        self.execute_transaction()
+        value = self.execute_transaction()
+        return value
 
     def configure_ospf_protocol(self):
         self.conn: ConnectHandler = ConnectHandler(**self.connector_dict_default)
