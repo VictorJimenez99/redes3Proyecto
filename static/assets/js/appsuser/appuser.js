@@ -1,41 +1,40 @@
-
 $(document).ready(function () {
 
 
-    let SendInfo = {
+    let SendInfo = {};
+    let oldemail = null;
 
-        };
-    let oldemail=null;
-
-        $.ajax({
-            type: 'post',
-            url: '/get_sysuser_info',
-            data: JSON.stringify(SendInfo),
-            contentType: "application/json; charset=utf-8",
-            traditional: true,
-            success: function (data) {
-                oldemail = data.email
-                $("#email").val(data.email);
-            },
-            error: function (xhr) {
-                console.log(xhr)
-                createAlert('Opps!', 'Something went wrong', xhr, 'danger', true, false, 'pageMessages');
-            }
-        });
+    $.ajax({
+        type: 'post',
+        url: '/get_sysuser_info',
+        data: JSON.stringify(SendInfo),
+        contentType: "application/json; charset=utf-8",
+        traditional: true,
+        success: function (data) {
+            oldemail = data.email
+            $("#email").val(data.email);
+        },
+        error: function (xhr) {
+            console.log(xhr)
+            createAlert('Opps!', 'Something went wrong', xhr, 'danger', true, false, 'pageMessages');
+        }
+    });
 
     $("#btn_actualizar").click(function () {
 
         let password = $("#password").val();
         let email = $("#email").val();
-        if (email!== undefined && email !== oldemail && email.length > 0  && password !== "nopassword") {
+        $("#password").attr("disabled", "disabled");
+        $("#email").attr("disabled", "disabled");
+        if (email !== undefined && email !== oldemail && email.length > 0 && password !== "nopassword") {
             updateEmail(email)
             updatePass(password)
-
         } else {
-            if(email === oldemail && password === "nopassword"){
-                 alert("Nada que modificar")
-            }else
-            if (email!== undefined && email.length > 0 && email !== oldemail) {
+            if (email === oldemail && password === "nopassword") {
+                alert("Nada que modificar")
+                $("#password").removeAttr("disabled");
+                $("#email").removeAttr("disabled");
+            } else if (email !== undefined && email.length > 0 && email !== oldemail) {
                 updateEmail(email)
 
             }
@@ -59,7 +58,7 @@ $(document).ready(function () {
             traditional: true,
             success: function (data) {
 
-                createAlert('Exito!', 'Se ha actualizado', 'La contraseña ha sido actualizado, se redirigira a la pantalla de login' , 'success', true, true, 'pageMessages');
+                createAlert('Exito!', 'Se ha actualizado', 'La contraseña ha sido actualizado, se redirigira a la pantalla de login', 'success', true, true, 'pageMessages');
                 setTimeout(function () {
                     $(location).attr('href', '/');
                 }, 5000);

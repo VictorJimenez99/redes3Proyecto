@@ -229,8 +229,8 @@ def router_list():
 
 # --------------------------------- router RIP_V2  -------------------------------------
 
-@app.route('/router/<str:router_ip>/router_rip', methods=["POST"])
-def add_router(router_ip: str):
+@app.route('/router/<string:router_ip>/router_rip', methods=["POST"])
+def add_router_rip(router_ip: str):
     if request.method != 'POST':
         return "not a post method", 400
     if not request.is_json:
