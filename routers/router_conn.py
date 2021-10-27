@@ -100,3 +100,14 @@ class RouterConnection:
         self.add_instructions_to_transaction([str1, str2])
         self.execute_transaction()
 
+    def drop_router_user(self, user: RouterUser):
+        str1 = f"configure terminal"
+        str2 = f"no username {user.user_name}"
+        self.start_transaction()
+        self.add_instructions_to_transaction([str1, str2])
+        self.execute_transaction()
+
+    def update_router_user(self, user: RouterUser, password: str):
+        self.drop_router_user(user)
+        self.add_router_user(user, password)
+

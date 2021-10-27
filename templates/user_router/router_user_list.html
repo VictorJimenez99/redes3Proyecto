@@ -71,7 +71,7 @@
                                         </a>
                                     </td>
                                     <td class="text-center">
-                                        <a onclick="dropRouterUser({{ users[i].id }})" type="button"
+                                        <a onclick="openModal(); setId({{ users[i].id }})" type="button"
                                            class="btn btn-danger">Eliminar
                                         </a>
                                     </td>
@@ -98,9 +98,44 @@
 
         </div>
 
-        </div>
 
     </section><!-- End Contact Section -->
+
+
+    <!-- Modal -->
+    <div class="modal fade " id="modelDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Credenciales</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row gy-4">
+                        <div class="col-md-12">
+                            <select id="access_user" class="form-control" required>
+                                <option value="-1" selected>Seleccione el usuario de acceso</option>
+                                {% for i in range(0, len) %}
+                                    <option value="{{ users[i].user_name }}">{{ users[i].user_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <input id="access_password" type="password" class="form-control"
+                                   name="subject"
+                                   placeholder="Password del usuario de acceso" required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="unsetId()">Cerrar </button>
+                    <button type="button" class="btn btn-danger" onclick="dropRouterUser(getId())">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function () {
             clean_navbar();

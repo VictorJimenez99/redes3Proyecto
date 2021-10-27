@@ -52,7 +52,8 @@
                             <input id="id" type="hidden" value="{{ router_user.id }}">
 
                             <div class="col-md-12">
-                                <input value="{{ router_user.user_name }}" id="user_name" type="text" name="name" class="form-control"
+                                <input value="{{ router_user.user_name }}" id="user_name" type="text" name="name"
+                                       class="form-control"
                                        placeholder="user name" required>
                             </div>
 
@@ -63,10 +64,28 @@
                             </div>
                             <div class="col-md-12">
                                 <select id="user_type" class="form-control" required>
-                                    <option value="-1" {% if router_user.user_type == 0 %} selected {% endif %}>Seleccione el tipo de usuario</option>
-                                    <option value="1" {% if router_user.user_type == 1 %} selected {% endif %}>admin</option>
-                                    <option value="2" {% if router_user.user_type == 2 %} selected {% endif %}>lectura</option>
+                                    <option value="-1" {% if router_user.user_type == 0 %} selected {% endif %}>
+                                        Seleccione el tipo de usuario
+                                    </option>
+                                    <option value="15" {% if router_user.user_type == 15 %} selected {% endif %}>admin
+                                    </option>
+                                    <option value="0" {% if router_user.user_type == 0 %} selected {% endif %}>lectura
+                                    </option>
                                 </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <select id="access_user" class="form-control" required>
+                                    <option value="-1" selected>Seleccione el usuario de acceso</option>
+                                    {% for i in range(0, len) %}
+                                        <option value="{{ users[i].user_name }}">{{ users[i].user_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <input id="access_password" type="password" class="form-control"
+                                       name="subject"
+                                       placeholder="Password del usuario de acceso" required>
                             </div>
 
 

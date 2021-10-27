@@ -12,6 +12,13 @@ $(document).ready(function () {
         let id = $("#id").val();
         $("#password").attr("disabled", "disabled");
         $("#user_type").attr("disabled", "disabled");
+        let access_password = $("#access_password").val();
+        let access_user = $("#access_user").val();
+        if (access_user === "-1" || access_password === undefined) {
+            alert("Colocar credenciales");
+            return
+        }
+
         if (user_type === "-1" || name === "" || password === "" || (old_password === password && old_user_type === user_type)) {
             alert("Nada que modificar")
             $("#password").removeAttr("disabled");
@@ -25,7 +32,9 @@ $(document).ready(function () {
                 id: id,
                 user_name: name,
                 password: password,
-                user_type: user_type
+                user_type: user_type,
+                access_password: access_password,
+                access_user: access_user
             };
 
             $.ajax({

@@ -65,9 +65,9 @@
                                 <th scope="row">{{ count }}</th>
                                 <td>{{ users[i].name }}</td>
                                 <td>{{ users[i].ip_addr }}</td>
-                                <td> {% if users[i].protocol == 1 %} RIP {% elif users[i].protocol == 2 %}
-                                    OSPF {% else %} EIGRP {% endif %} </td>
-                                >
+                                <td> {% if users[i].protocol == "1" %} RIP {% elif users[i].protocol == "2" %}
+                                    OSPF {% else %} EIGRP {% endif %}</td>
+
                                 {% if user_type == 1 %}
                                     <td class="text-center">
                                         <a onclick="dropSysUser({{ users[i].id }})" type="button"

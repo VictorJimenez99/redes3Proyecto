@@ -399,7 +399,7 @@ def router_user_list():
 def add_view_router_user():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if has_valid_session(request) and user.user_type == 1:
-        users: RouterUser = RouterUser.get_all_users();
+        users: RouterUser = RouterUser.get_all_users()
         return render_template("user_router/add_view_router_user.html", user_type=user.user_type, len = len(users), users = users)
     else:
         return redirect("/")
@@ -411,8 +411,9 @@ def update_view_router_user(router_user_id: int):
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     router_user: RouterUser = RouterUser.get_router_user_by_id(router_user_id)
     if has_valid_session(request) and user.user_type == 1:
+        users: RouterUser = RouterUser.get_all_users()
         return render_template("user_router/update_view_router_user.html", router_user=router_user,
-                               user_type=user.user_type)
+                               user_type=user.user_type, len = len(users), users = users)
     else:
         return redirect("/")
 
@@ -443,9 +444,12 @@ def add_router_user():
         return "Duplicated router user; cannot add new user router", 409
     if not RouterUser.validate_credentials(access_user,access_password):
         return "Invalid_Credentials", 409
+    routers = Router.get_router_all()
+    if not len(routers) > 0:
+        return "Se necesita dar de alta al menor un router", 409
     RouterUser.new_user_router(name, password, user_type)
     new_router: RouterUser = RouterUser.get_router_user_by_name(name);
-    routers = Router.get_router_all()
+
     for router in routers:
         conn = RouterConnection(router.ip_addr, access_user, access_password)
         value = conn.add_router_user(new_router, password)
@@ -471,11 +475,21 @@ def update_router_user():
     user_name = payload.get("user_name")
     password = payload.get("password")
     user_type = payload.get("user_type")
+    access_user = payload.get("access_user")
+    access_password = payload.get("access_password")
     if id is None or user_name is None or password is None or user_type is None:
         return "Unable to get params: Expected json with (id, user_name, password, user_type)", 406
     router_user: RouterUser = RouterUser.get_router_user_by_id(id)
     if router_user is None:
         return "Unable to get router_user_info", 500
+    routers = Router.get_router_all()
+    if not len(routers) > 0:
+        return "Se necesita dar de alta al menor un router", 409
+    RouterUser.new_user_router(user_name, password, user_type)
+    new_router: RouterUser = RouterUser.get_router_user_by_name(user_name)
+    for router in routers:
+        conn = RouterConnection(router.ip_addr, access_user, access_password)
+        value = conn.update_router_user(new_router, password)
     router_user.change_password(password)
     router_user.change_user_type(user_type)
     response = make_response("")
@@ -496,11 +510,20 @@ def drop_router_user():
 
     payload: dict = request.get_json(force=True)
     id = payload.get("id")
-    if id is None:
-        return "Unable to get params: Expected json with (id)", 406
+    access_user = payload.get("access_user")
+    access_password = payload.get("access_password")
+    if id is None or access_user is None or access_password is None:
+        return "Unable to get params: Expected json with (id, access_user, access_password)", 406
     router_user: RouterUser = RouterUser.get_router_user_by_id(id)
     if router_user is None:
         return "Unable to get router_user_info", 500
+    routers = Router.get_router_all()
+    if not len(routers) > 0:
+        return "Se necesita dar de alta al menor un router", 409
+    for router in routers:
+        conn = RouterConnection(router.ip_addr, access_user, access_password)
+        value = conn.drop_router_user(router_user)
+
     router_user.drop_user_router(id)
     response = make_response("")
     return response, 200
