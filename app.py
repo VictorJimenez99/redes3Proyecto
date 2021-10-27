@@ -218,7 +218,6 @@ def get_sysuser_info():
     return response, 200
 
 
-
 # ---------------------------------Drop SysUser  -------------------------------------
 
 @app.route('/drop_SysUser', methods=["POST"])
@@ -241,6 +240,8 @@ def drop_SysUser():
     sysUser.drop_user(id)
     response = make_response("")
     return response, 200
+
+
 ##################################################################################
 #                               ROUTERS                                          #
 ##################################################################################
@@ -252,7 +253,19 @@ def router_list():
     if has_valid_session(request):
         routers = Router.get_router_all()
         user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
-        return render_template("user/app_user_list.html", len=len(routers), users=routers, user_type=user.user_type)
+        return render_template("router/router_list.html", len=len(routers), users=routers, user_type=user.user_type)
+    else:
+        return redirect("/")
+
+
+# -------------------------------View Add Router  -----------------------------------
+
+@app.route('/add_view_router')
+def add_view_router():
+    if has_valid_session(request):
+        routers = Router.get_router_all()
+        user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+        return render_template("router/add_view_router.html", len=len(routers), users=routers, user_type=user.user_type)
     else:
         return redirect("/")
 
@@ -341,7 +354,7 @@ def update_router():
     return response, 200
 
 
-# ---------------------------------Drop Router User  -------------------------------------
+# ---------------------------------Drop Router  -------------------------------------
 
 @app.route('/drop_router', methods=["POST"])
 def drop_router():
@@ -391,6 +404,18 @@ def add_view_router_user():
         return redirect("/")
 
 
+# -----------------------------View Router User update -------------------------------------------
+@app.route('/update_view_router_user/<int:router_user_id>', methods=["GET"])
+def update_view_router_user(router_user_id: int):
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    router_user: RouterUser = RouterUser.get_router_user_by_id(router_user_id)
+    if has_valid_session(request) and user.user_type == 1:
+        return render_template("user_router/update_view_router_user.html", router_user=router_user,
+                               user_type=user.user_type)
+    else:
+        return redirect("/")
+
+
 # ---------------------------------Add Router User  -------------------------------------
 
 @app.route('/add_router_user', methods=["POST"])
@@ -408,7 +433,7 @@ def add_router_user():
     name = payload.get("user_name")
     password = payload.get("password")
     user_type = payload.get("user_type")
-    if name is None or name is None or password is None:
+    if name is None or name is None or password is None or user_type is None:
         return "Unable to get params: Expected json with (user_name, password, user_type)", 406
     possible_duplication = RouterUser.get_router_user_by_name(name)
     if possible_duplication:
@@ -435,12 +460,14 @@ def update_router_user():
     id = payload.get("id")
     user_name = payload.get("user_name")
     password = payload.get("password")
-    if id is None or user_name is None or password is None:
-        return "Unable to get params: Expected json with (id, user_name, password)", 406
+    user_type = payload.get("user_type")
+    if id is None or user_name is None or password is None or user_type is None:
+        return "Unable to get params: Expected json with (id, user_name, password, user_type)", 406
     router_user: RouterUser = RouterUser.get_router_user_by_id(id)
     if router_user is None:
         return "Unable to get router_user_info", 500
     router_user.change_password(password)
+    router_user.change_user_type(user_type)
     response = make_response("")
     return response, 200
 

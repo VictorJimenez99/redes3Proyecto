@@ -40,7 +40,7 @@
 
             <header class="section-header">
                 <h2>VICERI</h2>
-                <p>Lista de usuario de aplicación</p>
+                <p>Lista de routers</p>
             </header>
 
             <div class="row justify-content-center">
@@ -51,6 +51,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Nombre Router</th>
                             <th scope="col">Ip</th>
+                            <th scope="col">Tipo de protocolo</th>
                             <th scope="col">Configurar</th>
                             <th scope="col">Eliminar</th>
                         </tr>
@@ -72,7 +73,7 @@
                         <div class="error-message"></div>
                         <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                        <button type="button" onclick="window.location.href='/add_view_sys_user';">Crear nuevo usuario
+                        <button type="button" onclick="window.location.href='/add_view_router';">Alta de router
                         </button>
                     </div>
                 </div>
@@ -86,9 +87,8 @@
     <script>
         $(document).ready(function () {
             clean_navbar();
-            navbar_update(1);
-            navbar_update(2);
-            navbar_update(3);
+            navbar_update(9);
+            navbar_update(10);
         });
     </script>
 

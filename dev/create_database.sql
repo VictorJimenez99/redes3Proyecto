@@ -92,6 +92,16 @@ create table router_protocol(
     name text not null
 );
 
+insert into router_protocol(id, name)
+values (1,
+        'RIP');
+insert into router_protocol(id, name)
+values (2,
+        'OSPF');
+insert into router_protocol(id, name)
+values (2,
+        'IGRP');
+
 insert into router_user(user_name, password, salt,user_type)
 values ('root',
         '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',

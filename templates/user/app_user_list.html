@@ -52,6 +52,7 @@
                             <th scope="col">Username</th>
                             <th scope="col">Email</th>
                             {% if user_type == 1 %}
+                                <th scope="col">Tipo usuario</th>
                                 <th scope="col">Eliminar</th>
                             {% endif %}
                         </tr>
@@ -64,6 +65,7 @@
                                 <td>{{ users[i].user_name }}</td>
                                 <td>{{ users[i].email }}</td>
                                 {% if user_type == 1 %}
+                                    <td> {% if users[i].user_type == 1 %} admin {% else %} normal {% endif %} </td>
                                     <td class="text-center">
                                         <a onclick="dropSysUser({{ users[i].id }})" type="button"
                                            class="btn btn-danger">Eliminar

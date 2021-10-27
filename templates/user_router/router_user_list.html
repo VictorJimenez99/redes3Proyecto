@@ -51,6 +51,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Username</th>
                             {% if user_type == 1 %}
+                                <th scope="col">Tipo usuario</th>
                                 <th scope="col">Editar</th>
                                 <th scope="col">Eliminar</th>
                             {% endif %}
@@ -63,8 +64,9 @@
                                 <th scope="row">{{ count }}</th>
                                 <td>{{ users[i].user_name }}</td>
                                 {% if user_type == 1 %}
+                                    <td> {% if users[i].user_type == 1 %} admin {% else %} lectura {% endif %} </td>
                                     <td class="text-center">
-                                        <a onclick="viewUpdateRouterUser({{ users[i].id }})" type="button"
+                                        <a href="/update_view_router_user/{{ users[i].id }}" type="button"
                                            class="btn btn-success">Editar
                                         </a>
                                     </td>

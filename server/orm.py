@@ -238,6 +238,11 @@ class RouterUser(db.Model):
         setattr(self, "password", encrypted_password)
         db.session.commit()
 
+    def change_user_type(self, user_type: int):
+        print(user_type)
+        setattr(self, "user_type", user_type)
+        db.session.commit()
+
     @staticmethod
     def drop_user_router(_id: int):
         router_user = RouterUser.get_router_user_by_id(_id)

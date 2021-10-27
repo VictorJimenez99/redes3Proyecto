@@ -2211,3 +2211,50 @@ section {
     color: #fff;
     border-color: #373b3e;
 }
+
+
+/*--------------------------------------------------------------
+# tags input
+--------------------------------------------------------------*/
+
+.label-info {
+    background-color: #e27846;
+}
+
+.label-info  {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 90%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
+
+.bootstrap-tagsinput{
+  width: 100%;
+}
+.bootstrap-tagsinput{
+  border-radius: 0!important;
+}
+
+/*--------------------------------------------------------------
+# check boxes
+--------------------------------------------------------------*/
+
+
+.form-check-input:checked {
+    background-color: #e27846;
+    border-color: #e27846;
+}
+
+.form-check-input{
+  padding: 8px !important;
+}
+
+.form-check-label{
+  font-size: 14px;
+}
