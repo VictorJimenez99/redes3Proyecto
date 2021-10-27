@@ -18,6 +18,7 @@ class SysUser(db.Model):
     password = db.Column(db.String)
     salt = db.Column(db.String)
     email = db.Column(db.String)
+    user_type = db.Column(db.Integer)
 
     cookie = relationship("LoginCookie", back_populates="owner_rel")
 
@@ -52,8 +53,14 @@ class SysUser(db.Model):
         return values[0]
 
     @staticmethod
-    def add_new_sys_user(_user_name: str, _password: str):
-        user = SysUser(user_name=_user_name)
+    def drop_user(_id: int):
+        user = SysUser.get_user_by_id(_id)
+        db.session.delete(user)
+        db.session.commit()
+
+    @staticmethod
+    def add_new_sys_user(_user_name: str, _password: str,_user_type: int):
+        user = SysUser(user_name=_user_name, user_type = _user_type)
         user.salt = random_word(15)
 
         salted_password: str = _password + user.salt
@@ -212,10 +219,11 @@ class RouterUser(db.Model):
     user_name = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
     salt = db.Column(db.String, nullable=False)
+    user_type = db.Column(db.Integer, nullable=False)
 
     @staticmethod
-    def new_user_router(user_name: str, password: str):
-        user_router = RouterUser(user_name=user_name)
+    def new_user_router(user_name: str, password: str, user_type: str):
+        user_router = RouterUser(user_name=user_name, user_type = user_type)
         user_router.salt = random_word(15)
         salted_password: str = password + user_router.salt
         encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()

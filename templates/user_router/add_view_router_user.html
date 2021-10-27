@@ -26,7 +26,7 @@
     <!-- Template Main JS File -->
     <script src="../../static/assets/js/index.js"></script>
     <script src="../../static/assets/js/navbar.js"></script>
-    <script src="../../static/assets/js/appsuser/appUserNew.js"></script>
+    <script src="../../static/assets/js/routerUser/addRouterUser.js"></script>
 {% endblock %}
 
 
@@ -40,7 +40,7 @@
 
             <header class="section-header">
                 <h2>VICERI</h2>
-                <p>Crear usuario app</p>
+                <p>Crear usuario de router</p>
             </header>
 
             <div class="row justify-content-center">
@@ -64,7 +64,7 @@
                                 <select id="user_type" class="form-control" required>
                                     <option value="-1" selected>Seleccione el tipo de usuario</option>
                                     <option value="1">admin</option>
-                                    <option value="2">normal</option>
+                                    <option value="2">lectura</option>
                                 </select>
                             </div>
 
@@ -91,8 +91,8 @@
         $(document).ready(function () {
             clean_navbar();
             navbar_update(1);
-            navbar_update(2);
-            navbar_update(5);
+            navbar_update(6);
+            navbar_update(8);
         });
     </script>
 

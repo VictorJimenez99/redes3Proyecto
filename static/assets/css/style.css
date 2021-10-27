@@ -1433,11 +1433,26 @@ section {
 .contact .php-email-form input:focus, .contact .php-email-form textarea:focus {
   border-color: #e27846;
 }
+
+.php-email-form select:focus {
+  border-color: #e27846 !important;
+}
+
+.php-email-form select {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  border-radius: 0;
+}
+
 .contact .php-email-form input {
   padding: 10px 15px;
 }
 .contact .php-email-form textarea {
   padding: 12px 15px;
+}
+ .php-email-form select {
+  padding: 10px 15px;
 }
 .contact .php-email-form button[type=submit] {
   background: #e27846;

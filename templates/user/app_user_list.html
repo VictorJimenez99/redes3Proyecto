@@ -51,6 +51,9 @@
                             <th scope="col">#</th>
                             <th scope="col">Username</th>
                             <th scope="col">Email</th>
+                            {% if user_type == 1 %}
+                                <th scope="col">Eliminar</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -60,19 +63,31 @@
                                 <th scope="row">{{ count }}</th>
                                 <td>{{ users[i].user_name }}</td>
                                 <td>{{ users[i].email }}</td>
+                                {% if user_type == 1 %}
+                                    <td class="text-center">
+                                        <a onclick="dropSysUser({{ users[i].id }})" type="button"
+                                           class="btn btn-danger">Eliminar
+                                        </a>
+                                    </td>
+                                {% endif %}
+
                             </tr>
                         {% endfor %}
                         </tbody>
 
                     </table>
-                    <div class="col-md-12 text-center">
-                        <div class="loading">Loading</div>
-                        <div class="error-message"></div>
-                        <div class="sent-message">Your message has been sent. Thank you!</div>
+                    {% if user_type == 1 %}
+                        <div class="col-md-12 text-center">
+                            <div class="loading">Loading</div>
+                            <div class="error-message"></div>
+                            <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                        <button type="button" onclick="window.location.href='/add_view_sys_user';">Crear nuevo usuario</button>
-                    </div>
-                </div>
+                            <button type="button" onclick="window.location.href='/add_view_sys_user';">Crear nuevo
+                                usuario
+                            </button>
+                        </div>
+                        </div>
+                    {% endif %}
 
 
             </div>

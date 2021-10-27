@@ -26,7 +26,7 @@
     <!-- Template Main JS File -->
     <script src="../../static/assets/js/index.js"></script>
     <script src="../../static/assets/js/navbar.js"></script>
-    <script src="../../static/assets/js/appsuser/appuser.js"></script>
+    <script src="../../static/assets/js/routerUser/routerUserList.js"></script>
 {% endblock %}
 
 
@@ -50,6 +50,10 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Username</th>
+                            {% if user_type == 1 %}
+                                <th scope="col">Editar</th>
+                                <th scope="col">Eliminar</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -57,23 +61,40 @@
                             {% set count =  i + 1 %}
                             <tr>
                                 <th scope="row">{{ count }}</th>
-                                <td>{{ users[i].name}}</td>
+                                <td>{{ users[i].user_name }}</td>
+                                {% if user_type == 1 %}
+                                    <td class="text-center">
+                                        <a onclick="viewUpdateRouterUser({{ users[i].id }})" type="button"
+                                           class="btn btn-success">Editar
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a onclick="dropRouterUser({{ users[i].id }})" type="button"
+                                           class="btn btn-danger">Eliminar
+                                        </a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                         </tbody>
 
                     </table>
-{#                    <div class="col-md-12 text-center">
-                        <div class="loading">Loading</div>
-                        <div class="error-message"></div>
-                        <div class="sent-message">Your message has been sent. Thank you!</div>
+                    {% if user_type == 1 %}
+                        <div class="col-md-12 text-center">
+                            <div class="loading">Loading</div>
+                            <div class="error-message"></div>
+                            <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                        <button type="button" onclick="window.location.href='/add_view_sys_user';">Crear nuevo usuario</button>
-                    </div>#}
-                </div>
-
-
+                            <button type="button" onclick="window.location.href='/add_view_router_user';">Crear nuevo
+                                usuario
+                            </button>
+                        </div>
+                        </div>
+                    {% endif %}
             </div>
+
+
+        </div>
 
         </div>
 

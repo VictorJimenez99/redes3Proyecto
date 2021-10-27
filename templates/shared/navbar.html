@@ -13,20 +13,26 @@
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link scrollto active" href="/">Inicio</a></li>
-                    <li class="dropdown"><a href=""><span>Configuración Usuarios</span> <i class="bi bi-chevron-down"></i></a>
+                    <li class="dropdown"><a href=""><span>Configuración Usuarios</span> <i
+                            class="bi bi-chevron-down"></i></a>
                         <ul>
                             <li class="dropdown"><a href="/app_user_list"><span>Usuarios app</span> <i
                                     class="bi bi-chevron-right"></i></a>
                                 <ul>
                                     <li><a href="/app_user_list">Lista de usuarios</a></li>
                                     <li><a href="/app_user_pass">Actualizar mi usuario</a></li>
-                                    <li><a href="/add_view_sys_user">Nuevo Usuario</a></li>
+                                    {% if user_type == 1 %}
+                                        <li><a href="/add_view_sys_user">Nuevo Usuario</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                             <li class="dropdown"><a href="/router_user_list"><span>Usuarios router</span> <i
                                     class="bi bi-chevron-right"></i></a>
                                 <ul>
                                     <li><a href="/router_user_list">Lista de usuarios</a></li>
+                                    {% if user_type == 1 %}
+                                        <li><a href="/add_view_router_user">Nuevo Usuario</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                         </ul>
@@ -34,7 +40,10 @@
                     <li class="dropdown"><a href="#"><span>Routers</span> <i class="bi bi-chevron-down"></i></a>
                         <ul>
                             <li><a href="#">Lista de routers</a></li>
-                            <li><a href="#">Crear router</a></li>
+                            {% if user_type == 1 %}
+                                        <li><a href="#">Crear router</a></li>
+                                    {% endif %}
+
                         </ul>
                     </li>
                     <li><a class="nav-link scrollto" href="#services">Proto de enrutamiento</a></li>

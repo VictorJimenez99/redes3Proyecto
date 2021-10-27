@@ -4,6 +4,10 @@ drop table if exists login_cookie;
 drop table if exists sys_user;
 
 
+create table user_type(
+    id integer primary key not null default 1,
+    user_type text unique not null default 'typeless'
+);
 
 create table sys_user
 (
@@ -11,13 +15,36 @@ create table sys_user
     user_name text unique         not null default 'user_name',
     password  text                not null default 'password',
     salt      text                not null default 'salt',
-    email     text
+    email     text,
+    user_type integer not null default 1,
+
+    constraint sys_user_user_type_fk
+                     foreign key(user_type) references user_type(id)
 );
 
-insert into sys_user(user_name, password, salt)
+create view if not exists sys_user_view as
+select sys_user.id,
+       user_name,
+       password,
+       salt,
+       ut.user_type from sys_user join user_type ut on sys_user.user_type = ut.id;
+
+
+
+insert into user_type(id, user_type)
+values (1,
+        'admin'
+        );
+
+insert into user_type(id, user_type)
+values (2,
+        'normal'
+        );
+
+insert into sys_user(user_name, password, salt,user_type)
 values ('root',
         '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',
-        'salt');
+        'salt',1);
 
 
 
@@ -44,7 +71,11 @@ create table router_user
     id        integer not null  primary key autoincrement,
     user_name text    not null default 'no name',
     password  text    not null default 'password',
-    salt      text    not null default 'salt'
+    salt      text    not null default 'salt',
+    user_type integer not null default 2,
+
+    constraint router_user_user_type_fk
+                     foreign key(user_type) references user_type(id)
 
 );
 
@@ -59,4 +90,9 @@ create table router
 create table router_protocol(
     id integer not null primary key autoincrement default 0,
     name text not null
-)
+);
+
+insert into router_user(user_name, password, salt,user_type)
+values ('root',
+        '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',
+        'salt',1);
