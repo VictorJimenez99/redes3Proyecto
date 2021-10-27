@@ -70,7 +70,7 @@
 
                                 {% if user_type == 1 %}
                                     <td class="text-center">
-                                        <a onclick="dropSysUser({{ users[i].id }})" type="button"
+                                        <a onclick="window.location.href='/router_configure_protocol/'+{{ users[i].id}};" type="button"
                                            class="btn btn-success">Configurar Protocolo
                                         </a>
                                     </td>

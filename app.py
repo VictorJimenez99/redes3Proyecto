@@ -262,10 +262,33 @@ def router_list():
 
 @app.route('/add_view_router')
 def add_view_router():
-    if has_valid_session(request):
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if has_valid_session(request) and user.user_type == 1:
+        return render_template("router/add_view_router.html", user_type=user.user_type)
+    else:
+        return redirect("/")
+
+# -------------------------------View Configure Router Protocol  -----------------------------------
+
+@app.route('/router_configure_protocol')
+def router_configure_protocol():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if has_valid_session(request) and user.user_type == 1:
         routers = Router.get_router_all()
-        user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
-        return render_template("router/add_view_router.html", len=len(routers), users=routers, user_type=user.user_type)
+        users = SysUser.get_all_users()
+        return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers, len_users=len(users), users=users, user_type=user.user_type, router= None )
+    else:
+        return redirect("/")
+
+
+@app.route('/router_configure_protocol/<int:id>')
+def router_configure_protocol_par(id: int):
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if has_valid_session(request) and user.user_type == 1:
+        router: Router = Router.get_router_by_id(id)
+        routers = Router.get_router_all()
+        users = SysUser.get_all_users()
+        return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers, len_users=len(users), users=users, user_type=user.user_type, router= router)
     else:
         return redirect("/")
 
@@ -295,6 +318,58 @@ def add_router_rip(router_ip: str):
     response = make_response(value)
     return response, 200
 
+
+
+# --------------------------------- router OSPF_V2  -------------------------------------
+
+@app.route('/router/<string:router_ip>/router_ospf', methods=["POST"])
+def add_router_ospf(router_ip: str):
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    networks = payload.get("networks")
+    ip_addr = router_ip
+    router_user = payload.get("router_user")
+    router_user_password = payload.get("router_user_password")
+    if networks is None or ip_addr is None or router_user is None or router_user_password:
+        return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
+
+    conn = RouterConnection(ip_addr, router_user, router_user_password)
+    value = conn.configure_rip_protocol(networks)
+    response = make_response(value)
+    return response, 200
+
+
+# --------------------------------- router EIGRP_V2  -------------------------------------
+
+@app.route('/router/<string:router_ip>/router_eigrp', methods=["POST"])
+def add_router_eigrp(router_ip: str):
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    networks = payload.get("networks")
+    ip_addr = router_ip
+    router_user = payload.get("router_user")
+    router_user_password = payload.get("router_user_password")
+    if networks is None or ip_addr is None or router_user is None or router_user_password:
+        return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
+
+    conn = RouterConnection(ip_addr, router_user, router_user_password)
+    value = conn.configure_rip_protocol(networks)
+    response = make_response(value)
+    return response, 200
 
 # ---------------------------------add Router  -------------------------------------
 

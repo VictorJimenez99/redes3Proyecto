@@ -1,0 +1,124 @@
+{% extends "shared/navbar.html" %}
+
+{% block title %}
+    <title>Login</title>
+{% endblock %}
+
+{% block sourcescss %}
+    <link href="../../static/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="../../static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="../../static/assets/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/assets/vendor/tagsinput/css/bootstrap-tagsinput.css"/>
+
+{% endblock %}
+
+{% block sourcesjs %}
+    <script src="../../static/assets/vendor/aos/aos.js"></script>
+    <script src="../../static/assets/vendor/php-email-form/validate.js"></script>
+    <script src="../../static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="../../static/assets/vendor/purecounter/purecounter.js"></script>
+    <script src="../../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="../../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="../../static/assets/vendor/jquery/jquery-3.6.0.min.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="../../static/assets/vendor/tagsinput/js/bootstrap-tagsinput.js"></script>
+    <script src="../../static/assets/js/index.js"></script>
+    <script src="../../static/assets/js/navbar.js"></script>
+    <script src="../../static/assets/js/router/configureProtocol.js"></script>
+{% endblock %}
+
+
+{% block body %}
+
+
+    <section id="contact" class="login d-flex align-items-center">
+
+
+        <div class="container" data-aos="fade-up">
+
+            <header class="section-header">
+                <h2>VICERI</h2>
+                <p>Configurar protocolo</p>
+            </header>
+
+            <div class="row justify-content-center">
+
+
+                <div class="col-lg-6">
+                    <form action="" method="post" class="php-email-form">
+                        <div class="row gy-4">
+
+                            <div class="col-md-12">
+                                <select onchange="onChengeRouter(this)" id="name" class="form-control" required>
+                                 <option value="-1" selected>Seleccione un router</option>
+                                    {% for i in range(0, len_routers) %}
+                                        <option data-protocol="{{ routers[i].protocol }}" data-ip="{{ routers[i].ip }}" value="{{ routers[i].name }}">{{ routers[i].name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <select onchange="onChengeProtocol(this);" id="protocol" class="form-control" required>
+                                    <option value="-1" selected>Seleccione tipo de protocolo a dar de alta</option>
+                                    <option value="1">RIP</option>
+                                    <option value="2">OSPF</option>
+                                    <option value="3">EIGRP</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 {% if router==None %}d-none {% endif %}">
+                                <input id="nombre_proto" type="text" class="form-control"
+                                       name="subject"
+                                       placeholder="autonomous-system (numero)" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input id="networks" type="text" placeholder="{% if router==None %}Esperando seleccion de protocolo {% elif router.protocol=="RIP" %} Cada ip de la network a configurar {% elif router.protocol=="RIP" %} Cada ip de la network a configurar'  {% elif router.protocol=="RIP" %} Grupos de 3 (id de la red) (wildcard) (numero de area) {% endif %}"
+                                       data-role="tagsinput"/>
+                            </div>
+                            <div class="col-md-12">
+                                <select id="access_user" class="form-control" required>
+                                    <option value="-1" selected>Seleccione el usuario de acceso</option>
+                                    {% for i in range(0, len_users) %}
+                                        <option value="{{ users[i].user_name }}">{{ users[i].user_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <input id="access_password" type="password" class="form-control"
+                                       name="subject"
+                                       placeholder="Password del usuario de acceso" required>
+                            </div>
+
+
+                            <div class="col-md-12 text-center">
+                                <div class="loading">Loading</div>
+                                <div class="error-message"></div>
+                                <div class="sent-message">Your message has been sent. Thank you!</div>
+
+                                <button type="button" id="btn_crear">Modificar configuración</button>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section><!-- End Contact Section -->
+    <script>
+        $(document).ready(function () {
+            clean_navbar();
+            navbar_update(9);
+            navbar_update(12);
+        });
+    </script>
+
+{% endblock %}
+</html>
