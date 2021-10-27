@@ -64,7 +64,7 @@
                                 <th scope="row">{{ count }}</th>
                                 <td>{{ users[i].user_name }}</td>
                                 {% if user_type == 1 %}
-                                    <td> {% if users[i].user_type == 1 %} admin {% else %} lectura {% endif %} </td>
+                                    <td> {% if users[i].user_type == 15 %} admin {% else %} lectura {% endif %} </td>
                                     <td class="text-center">
                                         <a href="/update_view_router_user/{{ users[i].id }}" type="button"
                                            class="btn btn-success">Editar

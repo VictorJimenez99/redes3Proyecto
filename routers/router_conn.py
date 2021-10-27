@@ -93,5 +93,10 @@ class RouterConnection:
         instructions = [str1, str2]
         self.add_instructions_to_transaction(instructions)
 
-    def add_admin_router_user(self, user: RouterUser):
-        pass
+    def add_router_user(self, user: RouterUser, password: str):
+        str1 = f"configure terminal"
+        str2 = f"username {user.user_name} privilege {user.user_type} secret {password}"
+        self.start_transaction()
+        self.add_instructions_to_transaction([str1, str2])
+        self.execute_transaction()
+

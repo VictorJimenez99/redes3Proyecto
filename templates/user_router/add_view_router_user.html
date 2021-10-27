@@ -1,7 +1,7 @@
 {% extends "shared/navbar.html" %}
 
 {% block title %}
-    <title>Login</title>
+    <title>Crear usuario de router</title>
 {% endblock %}
 
 {% block sourcescss %}
@@ -63,11 +63,24 @@
                             <div class="col-md-12">
                                 <select id="user_type" class="form-control" required>
                                     <option value="-1" selected>Seleccione el tipo de usuario</option>
-                                    <option value="1">admin</option>
-                                    <option value="2">lectura</option>
+                                    <option value="0">admin</option>
+                                    <option value="15">lectura</option>
                                 </select>
                             </div>
 
+                            <div class="col-md-12">
+                                <select id="access_user" class="form-control" required>
+                                    <option value="-1" selected>Seleccione el usuario de acceso</option>
+                                    {% for i in range(0, len) %}
+                                        <option value="{{ users[i].user_name }}">{{ users[i].user_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <input id="access_password" type="password" class="form-control"
+                                       name="subject"
+                                       placeholder="Password del usuario de acceso" required>
+                            </div>
 
                             <div class="col-md-12 text-center">
                                 <div class="loading">Loading</div>

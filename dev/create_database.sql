@@ -41,6 +41,8 @@ values (2,
         'normal'
         );
 
+
+
 insert into sys_user(user_name, password, salt,user_type)
 values ('root',
         '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',
@@ -66,6 +68,11 @@ begin
     update login_cookie set expiration_date = (strftime('%s', 'now') + 1800) where id == New.id;
 end;
 
+create table router_user_type(
+    id integer primary key not null default 1,
+    user_type text unique not null default 'typeless'
+);
+
 create table router_user
 (
     id        integer not null  primary key autoincrement,
@@ -75,7 +82,7 @@ create table router_user
     user_type integer not null default 2,
 
     constraint router_user_user_type_fk
-                     foreign key(user_type) references user_type(id)
+                     foreign key(user_type) references router_user_type(id)
 
 );
 
@@ -92,6 +99,8 @@ create table router_protocol(
     name text not null
 );
 
+
+
 insert into router_protocol(id, name)
 values (1,
         'RIP');
@@ -99,10 +108,23 @@ insert into router_protocol(id, name)
 values (2,
         'OSPF');
 insert into router_protocol(id, name)
-values (2,
+values (3,
         'IGRP');
+
+
+insert into router_user_type(id, user_type)
+values (0,
+        'lectura'
+        );
+
+insert into router_user_type(id, user_type)
+values (15,
+        'admin'
+        );
+
+
 
 insert into router_user(user_name, password, salt,user_type)
 values ('root',
         '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',
-        'salt',1);
+        'salt',15);

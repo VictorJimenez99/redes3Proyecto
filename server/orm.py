@@ -270,6 +270,19 @@ class RouterUser(db.Model):
             return []
         return values
 
+    @staticmethod
+    def validate_credentials(_user_name: str, _password: str):
+        user: [] = RouterUser.query.filter_by(user_name=_user_name).all()
+        if len(user) == 0:
+            return False
+        # valid user_name
+        user: RouterUser = user[0]
+        test_password: str = _password + user.salt
+        encrypted_test = sha3_512(test_password.encode('utf-8')).hexdigest()
+        if user.password == encrypted_test:
+            return True
+        else:
+            return False
 
 # Protocol   ----------------------------------------------------------
 
