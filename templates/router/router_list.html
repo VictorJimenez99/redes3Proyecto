@@ -26,7 +26,7 @@
     <!-- Template Main JS File -->
     <script src="../../static/assets/js/index.js"></script>
     <script src="../../static/assets/js/navbar.js"></script>
-    <script src="../../static/assets/js/appsuser/appuser.js"></script>
+    <script src="../../static/assets/js/router/routerList.js"></script>
 {% endblock %}
 
 
@@ -52,8 +52,10 @@
                             <th scope="col">Nombre Router</th>
                             <th scope="col">Ip</th>
                             <th scope="col">Tipo de protocolo</th>
-                            <th scope="col">Configurar</th>
-                            <th scope="col">Eliminar</th>
+                            {% if user_type == 1 %}
+                                <th scope="col">Configurar</th>
+                                <th scope="col">Eliminar</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -61,21 +63,38 @@
                             {% set count =  i + 1 %}
                             <tr>
                                 <th scope="row">{{ count }}</th>
-                                <td>{{ users[i].user_name }}</td>
-                                <td>{{ users[i].email }}</td>
+                                <td>{{ users[i].name }}</td>
+                                <td>{{ users[i].ip_addr }}</td>
+                                <td> {% if users[i].protocol == 1 %} RIP {% elif users[i].protocol == 2 %}
+                                    OSPF {% else %} EIGRP {% endif %} </td>
+                                >
+                                {% if user_type == 1 %}
+                                    <td class="text-center">
+                                        <a onclick="dropSysUser({{ users[i].id }})" type="button"
+                                           class="btn btn-success">Configurar Protocolo
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a onclick="dropRouter({{ users[i].id }})" type="button"
+                                           class="btn btn-danger">Eliminar
+                                        </a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                         </tbody>
 
                     </table>
-                    <div class="col-md-12 text-center">
-                        <div class="loading">Loading</div>
-                        <div class="error-message"></div>
-                        <div class="sent-message">Your message has been sent. Thank you!</div>
+                    {% if user_type == 1 %}
+                        <div class="col-md-12 text-center">
+                            <div class="loading">Loading</div>
+                            <div class="error-message"></div>
+                            <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                        <button type="button" onclick="window.location.href='/add_view_router';">Alta de router
-                        </button>
-                    </div>
+                            <button type="button" onclick="window.location.href='/add_view_router';">Alta de router
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
 
 
