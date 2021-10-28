@@ -70,7 +70,8 @@
 
                                 {% if user_type == 1 %}
                                     <td class="text-center">
-                                        <a onclick="window.location.href='/router_configure_protocol/'+{{ users[i].id}};" type="button"
+                                        <a onclick="window.location.href='/router_configure_protocol/'+{{ users[i].id }};"
+                                           type="button"
                                            class="btn btn-success">Configurar Protocolo
                                         </a>
                                     </td>
@@ -106,8 +107,14 @@
     <script>
         $(document).ready(function () {
             clean_navbar();
-            navbar_update(9);
-            navbar_update(10);
+
+            {% if user_type==1 %}
+                navbar_update(9);
+                navbar_update(10);
+            {% else %}
+                navbar_update(7);
+                navbar_update(8);
+            {% endif %}
         });
     </script>
 

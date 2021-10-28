@@ -1,7 +1,7 @@
 {% extends "shared/navbar.html" %}
 
 {% block title %}
-    <title>Login</title>
+    <title>Configurar Router</title>
 {% endblock %}
 
 {% block sourcescss %}
@@ -54,29 +54,39 @@
                         <div class="row gy-4">
 
                             <div class="col-md-12">
-                                <select onchange="onChengeRouter(this)" id="name" class="form-control" required>
-                                 <option value="-1" selected>Seleccione un router</option>
-                                    {% for i in range(0, len_routers) %}
-                                        <option data-protocol="{{ routers[i].protocol }}" data-ip="{{ routers[i].ip }}" value="{{ routers[i].name }}">{{ routers[i].name }}</option>
-                                    {% endfor %}
+                                <select {% if router!=None %} disabled {% endif %} onchange="onChangeRouter(this)" id="name" class="form-control" required>
+                                    <option   value="-1" {% if router==None %}selected {% endif %}>Seleccione un router</option>
+                                    {% if router==None %}
+                                        {% for i in range(0, len_routers) %}
+                                            <option data-protocol="{{ routers[i].protocol }}"
+                                                    data-ip="{{ routers[i].ip_addr }}"
+                                                    value="{{ routers[i].name }}">{{ routers[i].name }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option  selected data-protocol="{{ router.protocol }}"
+                                                    data-ip="{{ router.ip_addr }}"
+                                                    value="{{ router.name }}">{{ router.name }}</option>
+                                    {% endif %}
+
                                 </select>
                             </div>
 
                             <div class="col-md-12">
-                                <select onchange="onChengeProtocol(this);" id="protocol" class="form-control" required>
-                                    <option value="-1" selected>Seleccione tipo de protocolo a dar de alta</option>
-                                    <option value="1">RIP</option>
-                                    <option value="2">OSPF</option>
-                                    <option value="3">EIGRP</option>
+                                <select onchange="onChangeProtocol(this);" id="protocol" class="form-control" required>
+                                    <option value="-1" {% if router==None %}selected {% endif %}>Seleccione tipo de protocolo a dar de alta</option>
+                                    <option value="1" {% if router!=None and router.protocol=="1"  %}selected {% endif %}>RIP</option>
+                                    <option value="2" {% if router!=None and router.protocol=="2"  %}selected {% endif %}>OSPF</option>
+                                    <option value="3" {% if router!=None and router.protocol=="3"  %}selected {% endif %}>EIGRP</option>
                                 </select>
                             </div>
-                            <div class="col-md-12 {% if router==None %}d-none {% endif %}">
+                            <div class="col-md-12 {% if router==None or router.protocol=="1" %}d-none {% endif %}">
                                 <input id="nombre_proto" type="text" class="form-control"
                                        name="subject"
-                                       placeholder="autonomous-system (numero)" required>
+                                       placeholder="{% if router==None or router.protocol=="2" %} Identificador de ospf {% elif router==None or router.protocol=="3" %} autonomous-system (numero) {% endif %}"  required>
                             </div>
                             <div class="col-md-12">
-                                <input id="networks" type="text" placeholder="{% if router==None %}Esperando seleccion de protocolo {% elif router.protocol=="RIP" %} Cada ip de la network a configurar {% elif router.protocol=="RIP" %} Cada ip de la network a configurar'  {% elif router.protocol=="RIP" %} Grupos de 3 (id de la red) (wildcard) (numero de area) {% endif %}"
+                                <input id="networks" type="text"
+                                       placeholder="{% if router==None %}Esperando seleccion de protocolo {% elif router.protocol=="1" %} Cada ip de la network a configurar {% elif router.protocol=="2" %} Cada ip de la network a configurar'  {% elif router.protocol=="3" %} Grupos de 3 (id de la red) (wildcard) (numero de area) {% endif %}"
                                        data-role="tagsinput"/>
                             </div>
                             <div class="col-md-12">

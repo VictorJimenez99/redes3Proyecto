@@ -275,7 +275,7 @@ def router_configure_protocol():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if has_valid_session(request) and user.user_type == 1:
         routers = Router.get_router_all()
-        users = SysUser.get_all_users()
+        users = RouterUser.get_all_users()
         return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers, len_users=len(users), users=users, user_type=user.user_type, router= None )
     else:
         return redirect("/")
@@ -287,7 +287,7 @@ def router_configure_protocol_par(id: int):
     if has_valid_session(request) and user.user_type == 1:
         router: Router = Router.get_router_by_id(id)
         routers = Router.get_router_all()
-        users = SysUser.get_all_users()
+        users = RouterUser.get_all_users()
         return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers, len_users=len(users), users=users, user_type=user.user_type, router= router)
     else:
         return redirect("/")
@@ -310,7 +310,7 @@ def add_router_rip(router_ip: str):
     ip_addr = router_ip
     router_user = payload.get("router_user")
     router_user_password = payload.get("router_user_password")
-    if networks is None or ip_addr is None or router_user is None or router_user_password:
+    if networks is None or ip_addr is None or router_user is None or router_user_password is None:
         return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
@@ -320,7 +320,7 @@ def add_router_rip(router_ip: str):
 
 
 
-# --------------------------------- router OSPF_V2  -------------------------------------
+# --------------------------------- router OSPF  -------------------------------------
 
 @app.route('/router/<string:router_ip>/router_ospf', methods=["POST"])
 def add_router_ospf(router_ip: str):
@@ -336,17 +336,18 @@ def add_router_ospf(router_ip: str):
     networks = payload.get("networks")
     ip_addr = router_ip
     router_user = payload.get("router_user")
+    proto_name = payload.get("proto_name")
     router_user_password = payload.get("router_user_password")
-    if networks is None or ip_addr is None or router_user is None or router_user_password:
-        return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
+    if networks is None or ip_addr is None or router_user is None or router_user_password is None or proto_name is None:
+        return "Unable to get params: Expected json with (networks, router_user, router_user_password,proto_name)", 406
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
-    value = conn.configure_rip_protocol(networks)
+    value = conn.configure_ospf_protocol(networks,proto_name)
     response = make_response(value)
     return response, 200
 
 
-# --------------------------------- router EIGRP_V2  -------------------------------------
+# --------------------------------- router EIGRP  -------------------------------------
 
 @app.route('/router/<string:router_ip>/router_eigrp', methods=["POST"])
 def add_router_eigrp(router_ip: str):
@@ -360,14 +361,15 @@ def add_router_eigrp(router_ip: str):
 
     payload: dict = request.get_json(force=True)
     networks = payload.get("networks")
+    proto_name = payload.get("proto_name")
     ip_addr = router_ip
     router_user = payload.get("router_user")
     router_user_password = payload.get("router_user_password")
-    if networks is None or ip_addr is None or router_user is None or router_user_password:
-        return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
+    if networks is None or ip_addr is None or router_user is None or router_user_password is None or proto_name is None:
+        return "Unable to get params: Expected json with (networks, router_user, router_user_password,proto_name)", 406
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
-    value = conn.configure_rip_protocol(networks)
+    value = conn.configure_eigrp_protocol(networks,proto_name)
     response = make_response(value)
     return response, 200
 

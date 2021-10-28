@@ -103,7 +103,8 @@
 
 
     <!-- Modal -->
-    <div class="modal fade " id="modelDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade " id="modelDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -129,7 +130,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="unsetId()">Cerrar </button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="unsetId()">Cerrar
+                    </button>
                     <button type="button" class="btn btn-danger" onclick="dropRouterUser(getId())">Eliminar</button>
                 </div>
             </div>
@@ -140,8 +142,14 @@
         $(document).ready(function () {
             clean_navbar();
             navbar_update(1);
-            navbar_update(6);
-            navbar_update(7);
+            {% if user_type==1 %}
+                navbar_update(6);
+                navbar_update(7);
+            {% else %}
+                navbar_update(5);
+                navbar_update(6);
+            {% endif %}
+
         });
     </script>
 

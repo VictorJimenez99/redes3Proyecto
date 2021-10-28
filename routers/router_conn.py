@@ -77,14 +77,29 @@ class RouterConnection:
         value = self.execute_transaction()
         return value
 
-    def configure_ospf_protocol(self):
-        self.conn: ConnectHandler = ConnectHandler(**self.connector_dict_default)
-        instructions = ["configure terminal",
-                        # TODO
-                        "exit"]
-        for instruction in instructions:
-            self.conn.send_command(instruction)
-        self.conn = None
+    def configure_ospf_protocol(self, network_array: [], name: str):
+        instruction_set_enable_ospf = ["configure terminal", f"router ospf {name}"]
+        result = []
+        for network in network_array:
+            result += [f"network {network.ip_network}  {network.wildcard} area {network.num_area} "]
+        instruction_set_enable_ospf += result
+        instruction_set_enable_ospf += [ "exit", "exit"]
+        self.start_transaction()
+        self.add_instructions_to_transaction(instruction_set_enable_ospf)
+        value = self.execute_transaction()
+        return value
+
+    def configure_eigrp_protocol(self, network_array: [], name: str):
+        instruction_set_enable_eigrp = ["configure terminal", f"router ospf {name}"]
+        result = []
+        for network in network_array:
+            result += [f"network {network}"]
+        instruction_set_enable_eigrp += result
+        instruction_set_enable_eigrp += [ "exit", "exit"]
+        self.start_transaction()
+        self.add_instructions_to_transaction(instruction_set_enable_eigrp)
+        value = self.execute_transaction()
+        return value
 
     def configure_interface_create_queue(self, interface: str):
         self.start_transaction()
