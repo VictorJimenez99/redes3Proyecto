@@ -59,8 +59,8 @@ class SysUser(db.Model):
         db.session.commit()
 
     @staticmethod
-    def add_new_sys_user(_user_name: str, _password: str,_user_type: int):
-        user = SysUser(user_name=_user_name, user_type = _user_type)
+    def add_new_sys_user(_user_name: str, _password: str, _user_type: int):
+        user = SysUser(user_name=_user_name, user_type=_user_type)
         user.salt = random_word(15)
 
         salted_password: str = _password + user.salt
@@ -162,10 +162,11 @@ class Router(db.Model):
     name = db.Column(db.String, nullable=False)
     ip_addr = db.Column(db.String, nullable=False)
     protocol = db.Column(db.String, nullable=False)
+    protocol_name = db.Column(db.String, nullable=False)
 
     @staticmethod
-    def new_router(router_name: str, ip_addr: str, protocol: str):
-        router = Router(name=router_name, ip_addr=ip_addr, protocol=protocol)
+    def new_router(router_name: str, ip_addr: str, protocol: str, protocol_name: str = None):
+        router = Router(name=router_name, ip_addr=ip_addr, protocol=protocol, protocol_name=protocol_name)
         print(f"adding new router to db: {router}")
         db.session.add(router)
         db.session.commit()
@@ -178,8 +179,9 @@ class Router(db.Model):
         setattr(self, 'ip_addr', ip_addr)
         db.session.commit()
 
-    def change_protocol(self, protocol: str):
+    def change_protocol(self, protocol: str, protocol_name: str = None):
         setattr(self, 'protocol', protocol)
+        setattr(self, 'protocol_name', protocol_name)
         db.session.commit()
 
     @staticmethod
@@ -223,7 +225,7 @@ class RouterUser(db.Model):
 
     @staticmethod
     def new_user_router(user_name: str, password: str, user_type: str):
-        user_router = RouterUser(user_name=user_name, user_type = user_type)
+        user_router = RouterUser(user_name=user_name, user_type=user_type)
         user_router.salt = random_word(15)
         salted_password: str = password + user_router.salt
         encrypted_password = sha3_512(salted_password.encode('utf-8')).hexdigest()
@@ -283,6 +285,7 @@ class RouterUser(db.Model):
             return True
         else:
             return False
+
 
 # Protocol   ----------------------------------------------------------
 

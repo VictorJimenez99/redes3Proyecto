@@ -315,8 +315,12 @@ def add_router_rip(router_ip: str):
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
     value = conn.configure_rip_protocol(networks)
-    value = conn.no_eigrp()
-    value = conn.no_ospf()
+    router: Router = Router.get_router_by_ip(ip_addr)
+    if not router.protocol == "1":
+        value = conn.no_eigrp(router.protocol_name)
+        value = conn.no_ospf(router.protocol_name)
+    router: Router = Router.get_router_by_ip(ip_addr)
+    router.change_protocol("1")
     response = make_response(value)
 
     return response, 200
@@ -346,8 +350,10 @@ def add_router_ospf(router_ip: str):
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
     value = conn.configure_ospf_protocol(networks,proto_name)
-    value = conn.no_eigrp()
+    router: Router = Router.get_router_by_ip(ip_addr)
+    value = conn.no_eigrp(router.protocol_name)
     value = conn.no_rip()
+    router.change_protocol("2",proto_name)
     response = make_response(value)
     return response, 200
 
@@ -375,8 +381,10 @@ def add_router_eigrp(router_ip: str):
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
     value = conn.configure_eigrp_protocol(networks,proto_name)
-    value = conn.no_ospf()
+    router: Router = Router.get_router_by_ip(ip_addr)
+    value = conn.no_ospf(router.protocol_name)
     value = conn.no_rip()
+    router.change_protocol("2", proto_name)
     response = make_response(value)
     return response, 200
 
