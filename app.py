@@ -316,6 +316,7 @@ def add_router_rip(router_ip: str):
     conn = RouterConnection(ip_addr, router_user, router_user_password)
     value = conn.configure_rip_protocol(networks)
     router: Router = Router.get_router_by_ip(ip_addr)
+    print(router)
     if not router.protocol == "1":
         value = conn.no_eigrp(router.protocol_name)
         value = conn.no_ospf(router.protocol_name)
