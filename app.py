@@ -268,6 +268,7 @@ def add_view_router():
     else:
         return redirect("/")
 
+
 # -------------------------------View Configure Router Protocol  -----------------------------------
 
 @app.route('/router_configure_protocol')
@@ -276,7 +277,8 @@ def router_configure_protocol():
     if has_valid_session(request) and user.user_type == 1:
         routers = Router.get_router_all()
         users = RouterUser.get_all_users()
-        return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers, len_users=len(users), users=users, user_type=user.user_type, router= None )
+        return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers,
+                               len_users=len(users), users=users, user_type=user.user_type, router=None)
     else:
         return redirect("/")
 
@@ -288,7 +290,8 @@ def router_configure_protocol_par(id: int):
         router: Router = Router.get_router_by_id(id)
         routers = Router.get_router_all()
         users = RouterUser.get_all_users()
-        return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers, len_users=len(users), users=users, user_type=user.user_type, router= router)
+        return render_template("router/router_configure_protocol.html", len_routers=len(routers), routers=routers,
+                               len_users=len(users), users=users, user_type=user.user_type, router=router)
     else:
         return redirect("/")
 
@@ -316,15 +319,14 @@ def add_router_rip(router_ip: str):
     conn = RouterConnection(ip_addr, router_user, router_user_password)
     value = conn.configure_rip_protocol(networks)
     router: Router = Router.get_router_by_ip(ip_addr)
-    print("protocolo:"+router.protocol)
-    if not router.protocol == "1":
+    print("protocolo:" + router.protocol)
+    if router.protocol_name is not None:
         print("entre")
         value = conn.no_eigrp(router.protocol_name)
         value = conn.no_ospf(router.protocol_name)
     router.change_protocol("1")
     response = make_response(value)
     return response, 200
-
 
 
 # --------------------------------- router OSPF  -------------------------------------
@@ -349,11 +351,12 @@ def add_router_ospf(router_ip: str):
         return "Unable to get params: Expected json with (networks, router_user, router_user_password,proto_name)", 406
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
-    value = conn.configure_ospf_protocol(networks,proto_name)
+    value = conn.configure_ospf_protocol(networks, proto_name)
     router: Router = Router.get_router_by_ip(ip_addr)
-    value = conn.no_eigrp(router.protocol_name)
+    if router.protocol_name is not None:
+        value = conn.no_eigrp(router.protocol_name)
     value = conn.no_rip()
-    router.change_protocol("2",proto_name)
+    router.change_protocol("2", proto_name)
     response = make_response(value)
     return response, 200
 
@@ -380,13 +383,15 @@ def add_router_eigrp(router_ip: str):
         return "Unable to get params: Expected json with (networks, router_user, router_user_password,proto_name)", 406
 
     conn = RouterConnection(ip_addr, router_user, router_user_password)
-    value = conn.configure_eigrp_protocol(networks,proto_name)
+    value = conn.configure_eigrp_protocol(networks, proto_name)
     router: Router = Router.get_router_by_ip(ip_addr)
-    value = conn.no_ospf(router.protocol_name)
+    if router.protocol_name is not None:
+        value = conn.no_ospf(router.protocol_name)
     value = conn.no_rip()
     router.change_protocol("2", proto_name)
     response = make_response(value)
     return response, 200
+
 
 # ---------------------------------add Router  -------------------------------------
 
@@ -492,7 +497,8 @@ def add_view_router_user():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if has_valid_session(request) and user.user_type == 1:
         users: RouterUser = RouterUser.get_all_users()
-        return render_template("user_router/add_view_router_user.html", user_type=user.user_type, len = len(users), users = users)
+        return render_template("user_router/add_view_router_user.html", user_type=user.user_type, len=len(users),
+                               users=users)
     else:
         return redirect("/")
 
@@ -505,7 +511,7 @@ def update_view_router_user(router_user_id: int):
     if has_valid_session(request) and user.user_type == 1:
         users: RouterUser = RouterUser.get_all_users()
         return render_template("user_router/update_view_router_user.html", router_user=router_user,
-                               user_type=user.user_type, len = len(users), users = users)
+                               user_type=user.user_type, len=len(users), users=users)
     else:
         return redirect("/")
 
@@ -534,7 +540,7 @@ def add_router_user():
     possible_duplication = RouterUser.get_router_user_by_name(name)
     if possible_duplication:
         return "Duplicated router user; cannot add new user router", 409
-    if not RouterUser.validate_credentials(access_user,access_password):
+    if not RouterUser.validate_credentials(access_user, access_password):
         return "Invalid_Credentials", 409
     routers = Router.get_router_all()
     if not len(routers) > 0:
