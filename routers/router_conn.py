@@ -86,7 +86,7 @@ class RouterConnection:
         instruction_set_enable_ospf = ["configure terminal", f"router ospf {name}"]
         result = []
         for network in network_array:
-            result += [f"network {network.ip_network}  {network.wildcard} area {network.num_area} "]
+            result += [f"network {network.get('ip_network')}  {network.get('wildcard')} area {network.get('num_area')}"]
         instruction_set_enable_ospf += result
         instruction_set_enable_ospf += [ "exit", "exit"]
         self.start_transaction()
