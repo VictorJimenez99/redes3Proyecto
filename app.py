@@ -310,6 +310,10 @@ def add_router_rip(router_ip: str):
     ip_addr = router_ip
     router_user = payload.get("router_user")
     router_user_password = payload.get("router_user_password")
+    print(networks)
+    print(ip_addr)
+    print(router_user)
+    print(router_user_password)
     if networks is None or ip_addr is None or router_user is None or router_user_password is None:
         return "Unable to get params: Expected json with (networks, router_user, router_user_password)", 406
 

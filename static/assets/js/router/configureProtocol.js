@@ -24,9 +24,9 @@ $(document).ready(function () {
         let ip_addr = $("#name").find(':selected').data('ip');
         let protocol = $("#protocol").val();
         let router_user = $("#access_user").val();
-        let netwotks = $("#networks").tagsinput('items');
+        let networks = $("#networks").tagsinput('items');
         let proto_name = $("#nombre_proto").val();
-        console.log(netwotks);
+        console.log(networks);
         let router_user_password = $("#access_password").val();
 
 
@@ -37,7 +37,7 @@ $(document).ready(function () {
         $("#access_password").attr("disabled", "disabled");
         $("#nombre_proto").attr("disabled", "disabled");
 
-        if (ip_addr === "" || protocol === "" || router_user === "" || !(netwotks.length > 0)) {
+        if (ip_addr === "" || protocol === "" || router_user === "" || !(networks.length > 0)) {
             alert("Llenar datos requeridos")
             $("#name").removeAttr("disabled");
             $("#protocol").removeAttr("disabled");
@@ -53,22 +53,22 @@ $(document).ready(function () {
                 SendInfo = {
                     router_user: router_user,
                     router_user_password: router_user_password,
-                    netwotks: netwotks,
+                    networks: networks,
                 }
 
             } else if (protocol == 2) {
                 ruta = "/router/" + ip_addr + "/router_ospf";
-                if ((netwotks.length % 3) !== 0) {
+                if ((networks.length % 3) !== 0) {
                     alert("Formato de las ip de network no funcionan")
                     return
                 }
                 let networkFixed = [];
-                for (let i = 1; i <= netwotks.length; i++) {
+                for (let i = 1; i <= networks.length; i++) {
                     if (i % 3 === 0) {
                         networkFixed.push({
-                            ip_network: netwotks[i - 3],
-                            wildcard: netwotks[i - 2],
-                            num_area: netwotks[i - 1],
+                            ip_network: networks[i - 3],
+                            wildcard: networks[i - 2],
+                            num_area: networks[i - 1],
                         });
                     }
                 }
@@ -78,7 +78,7 @@ $(document).ready(function () {
                     router_user: router_user,
                     router_user_password: router_user_password,
                     proto_name: proto_name,
-                    netwotks: networkFixed,
+                    networks: networkFixed,
                 }
 
             } else if (protocol == 3) {
@@ -86,7 +86,7 @@ $(document).ready(function () {
                 SendInfo = {
                     router_user: router_user,
                     router_user_password: router_user_password,
-                    netwotks: netwotks,
+                    networks: networks,
                     proto_name: proto_name,
                 }
 
