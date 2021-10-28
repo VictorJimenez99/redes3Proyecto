@@ -318,6 +318,7 @@ def add_router_rip(router_ip: str):
     router: Router = Router.get_router_by_ip(ip_addr)
     print(router)
     if not router.protocol == "1":
+        print("entre")
         value = conn.no_eigrp(router.protocol_name)
         value = conn.no_ospf(router.protocol_name)
     router: Router = Router.get_router_by_ip(ip_addr)
