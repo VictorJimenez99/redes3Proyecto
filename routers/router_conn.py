@@ -54,14 +54,19 @@ class RouterConnection:
         self.add_instructions_to_transaction(instruction_set_shutdown_all_protocols)
         self.execute_transaction()
 
-    def no_ospf(self, id: int):
+    def no_ospf(self):
         self.start_transaction()
-        self.add_instructions_to_transaction(["configure terminal", f"no router ospf {id}"])
+        self.add_instructions_to_transaction(["configure terminal", f"no router ospf"])
         self.execute_transaction()
 
     def no_rip(self):
         self.start_transaction()
         self.add_instructions_to_transaction(["configure terminal", "no router rip"])
+        self.execute_transaction()
+
+    def no_eigrp(self):
+        self.start_transaction()
+        self.add_instructions_to_transaction(["configure terminal", "no router eigrp"])
         self.execute_transaction()
 
     def configure_rip_protocol(self, network_array: []):
