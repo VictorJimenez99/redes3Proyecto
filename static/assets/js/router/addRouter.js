@@ -2,16 +2,17 @@ $(document).ready(function () {
 
     $("#nombre_proto").parent().removeAttr("style").hide();
 
-        $("#btn_crear").click(function () {
+    $("#btn_crear").click(function () {
 
         let name = $("#name").val();
         let ip_addr = $("#ip_addr").val();
         let protocol = $("#protocol").val();
+        let proto_name = $("#nombre_proto").val();
 
         $("#name").attr("disabled", "disabled");
         $("#ip_addr").attr("disabled", "disabled");
         $("#protocol").attr("disabled", "disabled");
-        if (ip_addr==="" || name==="") {
+        if (ip_addr === "" || name === "") {
             alert("Llenar datos requeridos")
             $("#name").removeAttr("disabled");
             $("#ip_addr").removeAttr("disabled");
@@ -20,7 +21,8 @@ $(document).ready(function () {
             let SendInfo = {
                 name: name,
                 ip_addr: ip_addr,
-                protocol: protocol
+                protocol: protocol,
+                proto_name: proto_name
             };
 
             $.ajax({

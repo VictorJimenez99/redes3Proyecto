@@ -409,13 +409,16 @@ def add_router():
     name = payload.get("name")
     ip_addr = payload.get("ip_addr")
     protocol = payload.get("protocol")
+    proto_name = payload.get("proto_name")
+
     if name is None or ip_addr is None or protocol is None:
         return "Unable to get params: Expected json with (name, ip_addr, protocol)", 406
     possible_duplication = Router.get_router_by_ip(ip_addr)
     if possible_duplication:
         return "Duplicated router; cannot add new router", 409
-
-    Router.new_router(name, ip_addr, protocol)
+    if proto_name is "":
+        proto_name = None
+    Router.new_router(name, ip_addr, protocol, proto_name)
 
     response = make_response("")
     return response, 200
