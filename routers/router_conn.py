@@ -95,7 +95,7 @@ class RouterConnection:
         return value
 
     def configure_eigrp_protocol(self, network_array: [], name: str):
-        instruction_set_enable_eigrp = ["configure terminal", f"router ospf {name}"]
+        instruction_set_enable_eigrp = ["configure terminal", f"router eigrp {name}"]
         result = []
         for network in network_array:
             result += [f"network {network}"]
