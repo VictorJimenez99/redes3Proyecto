@@ -20,7 +20,7 @@ class SysUser(db.Model):
     email = db.Column(db.String)
     user_type = db.Column(db.Integer)
 
-    cookie = relationship("LoginCookie", back_populates="owner_rel")
+    cookie = relationship("LoginCookie", back_populates="owner_rel", cascade="all,delete")
 
     def __repr__(self):
         return \
