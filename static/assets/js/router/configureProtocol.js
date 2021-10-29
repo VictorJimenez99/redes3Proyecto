@@ -103,7 +103,7 @@ $(document).ready(function () {
                 traditional: true,
                 success: function (data) {
 
-                    createAlert('Exito!', 'Se ha creado', 'El router a sido creado exitosamente', 'success', true, true, 'pageMessages');
+                    createAlert('Exito!', 'Se ha configurado', 'El protocolo a sido configurado exitosamente', 'success', true, true, 'pageMessages');
                     setTimeout(function () {
                         $(location).attr('href', '/router_list');
                     }, 3000);
