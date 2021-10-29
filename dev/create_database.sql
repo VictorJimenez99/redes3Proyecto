@@ -58,7 +58,7 @@ create table login_cookie
     owner           integer not null             default 1,
     expiration_date integer not null             default 1,
     constraint login_cookie_sys_user_fk
-        foreign key (owner) references sys_user (id)
+        foreign key (owner) references sys_user (id) on delete cascade on update restrict
 );
 
 
