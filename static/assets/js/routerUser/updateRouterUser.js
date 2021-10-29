@@ -45,7 +45,7 @@ $(document).ready(function () {
                 traditional: true,
                 success: function (data) {
 
-                    createAlert('Exito!', 'Se ha actualizadp', 'El usuario a sido actualizado', 'success', true, true, 'pageMessages');
+                    createAlert('Exito!', 'Se ha actualizado', 'El usuario a sido actualizado', 'success', true, true, 'pageMessages');
                     setTimeout(function () {
                         $(location).attr('href', '/router_user_list');
                     }, 2000);

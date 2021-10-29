@@ -586,13 +586,11 @@ def update_router_user():
     routers = Router.get_router_all()
     if not len(routers) > 0:
         return "Se necesita dar de alta al menor un router", 409
-    RouterUser.new_user_router(user_name, password, user_type)
-    new_router: RouterUser = RouterUser.get_router_user_by_name(user_name)
-    for router in routers:
-        conn = RouterConnection(router.ip_addr, access_user, access_password)
-        value = conn.update_router_user(new_router, password)
     router_user.change_password(password)
     router_user.change_user_type(user_type)
+    for router in routers:
+        conn = RouterConnection(router.ip_addr, access_user, access_password)
+        value = conn.update_router_user(router_user, password)
     response = make_response("")
     return response, 200
 
