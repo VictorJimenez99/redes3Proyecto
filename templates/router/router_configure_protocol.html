@@ -80,7 +80,7 @@
                                 </select>
                             </div>
                             <div class="col-md-12 {% if router==None or router.protocol=="1" %}d-none {% endif %}">
-                                <input id="nombre_proto" type="text" class="form-control"
+                                <input value="{% if router!=None and router.protocol !="1" %}{{router.protocol_name}}{% endif %}" id="nombre_proto" type="text" class="form-control"
                                        name="subject"
                                        placeholder="{% if router==None or router.protocol=="2" %} Identificador de ospf {% elif router==None or router.protocol=="3" %} autonomous-system (numero) {% endif %}"  required>
                             </div>

@@ -128,6 +128,7 @@ $(document).ready(function () {
 
 
 function onChangeProtocol(select) {
+    $("#nombre_proto").val("");
     let valor = select.value;
     console.log(valor)
     if (valor == 2 || valor == 3) {

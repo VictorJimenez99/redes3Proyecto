@@ -105,6 +105,7 @@ create table router_protocol
 
 
 
+
 insert into router_protocol(id, name)
 values (1,
         'RIP');
@@ -123,6 +124,14 @@ values (0,
 insert into router_user_type(id, user_type)
 values (15,
         'admin');
+
+insert into router(name, ip_addr, protocol, protocol_name)
+values ('R1','10.0.2.254','2','1');
+
+
+insert into router(name, ip_addr, protocol, protocol_name)
+values ('R2','10.0.3.2','2','1');
+
 
 
 

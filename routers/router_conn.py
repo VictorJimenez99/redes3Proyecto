@@ -54,20 +54,29 @@ class RouterConnection:
         self.add_instructions_to_transaction(instruction_set_shutdown_all_protocols)
         self.execute_transaction()
 
-    def no_ospf(self, protocol_name:str):
-        self.start_transaction()
-        self.add_instructions_to_transaction(["configure terminal", f"no router ospf {protocol_name}"])
-        self.execute_transaction()
+    def no_ospf(self, protocol_name: str):
+        try:
+            self.start_transaction()
+            self.add_instructions_to_transaction(["configure terminal", f"no router ospf {protocol_name}"])
+            self.execute_transaction()
+        except Exception as e:
+            print(f"An error occured:\n {e}")
 
     def no_rip(self):
-        self.start_transaction()
-        self.add_instructions_to_transaction(["configure terminal", "no router rip"])
-        self.execute_transaction()
+        try:
+            self.start_transaction()
+            self.add_instructions_to_transaction(["configure terminal", "no router rip"])
+            self.execute_transaction()
+        except Exception as e:
+            print(f"An error occured:\n {e}")
 
-    def no_eigrp(self, protocol_name:str):
-        self.start_transaction()
-        self.add_instructions_to_transaction(["configure terminal", f"no router eigrp {protocol_name}"])
-        self.execute_transaction()
+    def no_eigrp(self, protocol_name: str):
+        try:
+            self.start_transaction()
+            self.add_instructions_to_transaction(["configure terminal", f"no router eigrp {protocol_name}"])
+            self.execute_transaction()
+        except Exception as e:
+            print(f"An error occured:\n {e}")
 
     def configure_rip_protocol(self, network_array: []):
         instruction_set_enable_rip = ["configure terminal", "router rip", "version 2"]
@@ -88,7 +97,7 @@ class RouterConnection:
         for network in network_array:
             result += [f"network {network.get('ip_network')}  {network.get('wildcard')} area {network.get('num_area')}"]
         instruction_set_enable_ospf += result
-        instruction_set_enable_ospf += [ "exit", "exit"]
+        instruction_set_enable_ospf += ["exit", "exit"]
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_enable_ospf)
         value = self.execute_transaction()
@@ -100,7 +109,7 @@ class RouterConnection:
         for network in network_array:
             result += [f"network {network}"]
         instruction_set_enable_eigrp += result
-        instruction_set_enable_eigrp += [ "exit", "exit"]
+        instruction_set_enable_eigrp += ["exit", "exit"]
         self.start_transaction()
         self.add_instructions_to_transaction(instruction_set_enable_eigrp)
         value = self.execute_transaction()
@@ -130,4 +139,3 @@ class RouterConnection:
     def update_router_user(self, user: RouterUser, password: str):
         self.drop_router_user(user)
         self.add_router_user(user, password)
-
