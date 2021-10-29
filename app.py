@@ -388,7 +388,7 @@ def add_router_eigrp(router_ip: str):
     if router.protocol_name is not None:
         value = conn.no_ospf(router.protocol_name)
     value = conn.no_rip()
-    router.change_protocol("2", proto_name)
+    router.change_protocol("3", proto_name)
     response = make_response("")
     return response, 200
 
