@@ -325,7 +325,7 @@ def add_router_rip(router_ip: str):
         value = conn.no_eigrp(router.protocol_name)
         value = conn.no_ospf(router.protocol_name)
     router.change_protocol("1")
-    response = make_response(value)
+    response = make_response("")
     return response, 200
 
 
@@ -357,7 +357,7 @@ def add_router_ospf(router_ip: str):
         value = conn.no_eigrp(router.protocol_name)
     value = conn.no_rip()
     router.change_protocol("2", proto_name)
-    response = make_response(value)
+    response = make_response("")
     return response, 200
 
 
@@ -389,7 +389,7 @@ def add_router_eigrp(router_ip: str):
         value = conn.no_ospf(router.protocol_name)
     value = conn.no_rip()
     router.change_protocol("2", proto_name)
-    response = make_response(value)
+    response = make_response("")
     return response, 200
 
 
