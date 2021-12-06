@@ -1,4 +1,4 @@
-PRAGMA foreign_keys = on;
+PRAGMA foreign_keys = ON;
 
 drop table if exists login_cookie;
 drop table if exists sys_user;
@@ -77,7 +77,7 @@ create table router_user_type
 
 create table router_user
 (
-    id        integer not null primary key autoincrement,
+    id        integer not null primary key,
     user_name text    not null default 'no name',
     password  text    not null default 'password',
     salt      text    not null default 'salt',
@@ -90,8 +90,8 @@ create table router_user
 
 create table router
 (
-    id       integer     not null primary key autoincrement default 0,
-    name     text unique not null                           default 'no name',
+    id       integer     not null primary key default 0,
+    name     text        unique not null                    default 'no name',
     ip_addr  text        not null unique                    default '0.0.0.0',
     protocol text        not null,
     protocol_name text        default null
@@ -99,27 +99,40 @@ create table router
 
 create table router_protocol
 (
-    id   integer not null primary key autoincrement default 0,
+    id   integer not null primary key default 0,
     name text    not null
 );
 
+create table router_connection
+(
+  router  integer not null,
+  connected_to integer not null,
+  primary key(router, connected_to),
+  constraint  router_is_connected_to_parent_fk
+      foreign key (router) references router(id),
+  constraint  router_is_connected_to_child_fk
+      foreign key (router) references router(id)
+);
 
+create view if not exists router_connection_view as
+select r.id as router,
+       r.name as name,
+       r2.id as other_id,
+       r2.name as other_name
+from router_connection as rel
+         join router r on rel.router = r.id
+         join  router r2 on rel.connected_to = r2.id;
 
-
-insert into router_protocol(id, name)
-values (1,
-        'RIP');
-insert into router_protocol(id, name)
-values (2,
-        'OSPF');
-insert into router_protocol(id, name)
-values (3,
-        'IGRP');
+insert into router_protocol(name)
+values ('RIP');
+insert into router_protocol(name)
+values ('OSPF');
+insert into router_protocol(name)
+values ('IGRP');
 
 
 insert into router_user_type(id, user_type)
-values (0,
-        'lectura');
+values (0,'lectura');
 
 insert into router_user_type(id, user_type)
 values (15,
@@ -132,7 +145,8 @@ values ('R1','10.0.2.254','2','1');
 insert into router(name, ip_addr, protocol, protocol_name)
 values ('R2','10.0.3.2','2','1');
 
-
+insert into router_connection
+values (1,2), (2,1);
 
 
 insert into router_user(user_name, password, salt, user_type)
