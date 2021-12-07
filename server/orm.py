@@ -2,8 +2,9 @@ from time import time
 
 from flask_sqlalchemy import SQLAlchemy
 from sha3 import sha3_512
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import ForeignKey, Column, Integer, Table
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 from server.random import random_word
 
@@ -46,6 +47,7 @@ class SysUser(db.Model):
             return []
         return values
 
+    @staticmethod
     def get_user_by_id(_user_id: int):
         values: [] = SysUser.query.filter_by(id=_user_id).all()
         if len(values) == 0:
@@ -154,22 +156,43 @@ class LoginCookie(db.Model):
         return user
 
 
+# Router_connection Table ----------------------------------------------
+
+class RouterConnectionTable(db.Model):
+    __tablename__ = 'router_connection'
+    source = Column(Integer, ForeignKey("router.id"), primary_key=True)
+    destination = Column(Integer, ForeignKey("router.id"), primary_key=True)
+
+    def __repr__(self):
+        return f"{Router.get_router_by_id(self.source).name} -> {Router.get_router_by_id(self.destination).name}"
+
+
 # Router Table ------------------------------------------------
 
 class Router(db.Model):
-    __table_name__ = 'router'
+    __tablename__ = 'router'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     ip_addr = db.Column(db.String, nullable=False)
     protocol = db.Column(db.String, nullable=False)
-    protocol_name = db.Column(db.String, nullable=False)
+
+    router_conn_sources_rel = relationship("RouterConnectionTable",
+                                           secondary="router_connection",
+                                           primaryjoin="Router.id==RouterConnectionTable.source",
+                                           secondaryjoin="Router.id==RouterConnectionTable.destination",
+                                           backref="router_dest_rel", cascade="all,delete")
+
+    def __repr__(self):
+        return f"[id: {self.id}, name: {self.name}, ip_addr: {self.ip_addr}, protocol: {self.protocol}]"
 
     @staticmethod
-    def new_router(router_name: str, ip_addr: str, protocol: str, protocol_name: str = None):
-        router = Router(name=router_name, ip_addr=ip_addr, protocol=protocol, protocol_name=protocol_name)
+    def new_router(router_name: str, ip_addr: str, protocol: str):
+        router = Router(name=router_name, ip_addr=ip_addr, protocol=protocol)
         print(f"adding new router to db: {router}")
         db.session.add(router)
         db.session.commit()
+
+
 
     def change_name(self, router_name: str):
         setattr(self, 'name', router_name)
@@ -179,10 +202,17 @@ class Router(db.Model):
         setattr(self, 'ip_addr', ip_addr)
         db.session.commit()
 
-    def change_protocol(self, protocol: str, protocol_name: str = None):
+    def change_protocol(self, protocol: str):
         setattr(self, 'protocol', protocol)
-        setattr(self, 'protocol_name', protocol_name)
         db.session.commit()
+
+    @staticmethod
+    def get_connections_of(router_id):
+        values: [] = RouterConnectionTable.query.filter_by(source=router_id).all()
+        if len(values) == 0:
+            return None
+        return values
+
 
     @staticmethod
     def get_router_by_id(_id: int):
@@ -208,6 +238,7 @@ class Router(db.Model):
     @staticmethod
     def drop_router(_id: int):
         router = Router.get_router_by_id(_id)
+        print(f"Deleting router: {router}")
         db.session.delete(router)
         db.session.commit()
 
@@ -301,8 +332,15 @@ class RouterProtocol(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_router_user_by_id(_id: int):
+    def get_protocol_by_id(_id: int):
         values: [] = RouterProtocol.query.filter_by(id=_id).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+
+    @staticmethod
+    def get_protocol_by_name(_name: str):
+        values: [] = RouterProtocol.query.filter_by(name=_name).all()
         if len(values) == 0:
             return None
         return values[0]

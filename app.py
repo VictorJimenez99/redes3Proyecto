@@ -6,6 +6,7 @@ from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
 from routers.router_conn import RouterConnection
 
+
 app = Flask(__name__)
 
 db_name = 'database.sqlite'
@@ -13,7 +14,19 @@ db_name = 'database.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
+
+
 db.init_app(app)
+
+if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+    def _fk_pragma_on_connect(dbapi_con, con_record):  # noqa
+        print("turning on foreign keys for connection")
+        dbapi_con.execute('pragma foreign_keys=ON')
+
+    with app.app_context():
+        from sqlalchemy import event
+        event.listen(db.engine, 'connect', _fk_pragma_on_connect)
+        print("foreign keys are already on")
 
 
 # -----------------------------INDEX----------------------------------------------
@@ -252,6 +265,8 @@ def drop_SysUser():
 def router_list():
     if has_valid_session(request):
         routers = Router.get_router_all()
+        print(Router.get_connections_of(1))
+        print(Router.get_connections_of(2))
         user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
         return render_template("router/router_list.html", len=len(routers), users=routers, user_type=user.user_type)
     else:
@@ -356,7 +371,7 @@ def add_router_ospf(router_ip: str):
     if router.protocol_name is not None:
         value = conn.no_eigrp(router.protocol_name)
     value = conn.no_rip()
-    router.change_protocol("2", proto_name)
+    router.change_protocol("2")
     response = make_response("")
     return response, 200
 
@@ -385,10 +400,10 @@ def add_router_eigrp(router_ip: str):
     conn = RouterConnection(ip_addr, router_user, router_user_password)
     value = conn.configure_eigrp_protocol(networks, proto_name)
     router: Router = Router.get_router_by_ip(ip_addr)
-    if router.protocol_name is not None:
-        value = conn.no_ospf(router.protocol_name)
+    if router.protocol is not None:
+        value = conn.no_ospf(router.protocol)
     value = conn.no_rip()
-    router.change_protocol("3", proto_name)
+    router.change_protocol("3")
     response = make_response("")
     return response, 200
 
@@ -409,16 +424,16 @@ def add_router():
     name = payload.get("name")
     ip_addr = payload.get("ip_addr")
     protocol = payload.get("protocol")
-    proto_name = payload.get("proto_name")
+
+    # proto_name = payload.get("proto_name")
+    print(f"protocol: {protocol}")
 
     if name is None or ip_addr is None or protocol is None:
         return "Unable to get params: Expected json with (name, ip_addr, protocol)", 406
     possible_duplication = Router.get_router_by_ip(ip_addr)
     if possible_duplication:
         return "Duplicated router; cannot add new router", 409
-    if proto_name is "":
-        proto_name = None
-    Router.new_router(name, ip_addr, protocol, proto_name)
+    Router.new_router(name, ip_addr, protocol)
 
     response = make_response("")
     return response, 200
@@ -549,7 +564,7 @@ def add_router_user():
     if not len(routers) > 0:
         return "Se necesita dar de alta al menor un router", 409
     RouterUser.new_user_router(name, password, user_type)
-    new_router: RouterUser = RouterUser.get_router_user_by_name(name);
+    new_router: RouterUser = RouterUser.get_router_user_by_name(name)
 
     for router in routers:
         conn = RouterConnection(router.ip_addr, access_user, access_password)

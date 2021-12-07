@@ -93,8 +93,7 @@ create table router
     id       integer     not null primary key default 0,
     name     text        unique not null                    default 'no name',
     ip_addr  text        not null unique                    default '0.0.0.0',
-    protocol text        not null,
-    protocol_name text        default null
+    protocol text        not null
 );
 
 create table router_protocol
@@ -105,23 +104,23 @@ create table router_protocol
 
 create table router_connection
 (
-  router  integer not null,
-  connected_to integer not null,
-  primary key(router, connected_to),
-  constraint  router_is_connected_to_parent_fk
-      foreign key (router) references router(id),
-  constraint  router_is_connected_to_child_fk
-      foreign key (router) references router(id)
+  source  integer not null,
+  destination integer not null,
+  primary key(source, destination),
+  constraint  router_connection_source_fk
+      foreign key (source) references router(id),
+  constraint  router_connection_destination_fk
+      foreign key (destination) references router(id)
 );
 
 create view if not exists router_connection_view as
-select r.id as router,
-       r.name as name,
-       r2.id as other_id,
-       r2.name as other_name
+select r.id as source_id,
+       r.name as source_name,
+       r2.id as destination_id,
+       r2.name as destination_name
 from router_connection as rel
-         join router r on rel.router = r.id
-         join  router r2 on rel.connected_to = r2.id;
+         join router r on rel.source = r.id
+         join  router r2 on rel.destination = r2.id;
 
 insert into router_protocol(name)
 values ('RIP');
@@ -138,15 +137,24 @@ insert into router_user_type(id, user_type)
 values (15,
         'admin');
 
-insert into router(name, ip_addr, protocol, protocol_name)
-values ('R1','10.0.2.254','2','1');
-
-
-insert into router(name, ip_addr, protocol, protocol_name)
-values ('R2','10.0.3.2','2','1');
-
+insert into router(name, ip_addr, protocol)
+values ('R1.red1.com', '10.1.0.254', '1'),
+       ('R7.red7.com', '10.2.0.252', '1'),
+       ('R2.red2.com', '10.2.0.251', '1'),
+       ('R6.red5.com', '10.2.0.241', '1'),
+       ('R5.red7.com', '10.2.0.242', '1'),
+       ('R8.red6.com', '10.2.0.243', '1'),
+       ('R3.red3.com', '10.2.0.244', '1'),
+       ('R4.red4.com', '10.7.0.245', '1');
 insert into router_connection
-values (1,2), (2,1);
+values (1,2), (1,3), (1,4),
+       (2,1), (2,5), (2,6),
+       (3,7), (3,1),
+       (4,8), (4,7), (4, 1),
+       (5,2), (5,7),
+       (6,2),
+       (7,3), (7,5), (7,4),
+       (8,4);
 
 
 insert into router_user(user_name, password, salt, user_type)
