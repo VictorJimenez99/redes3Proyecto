@@ -108,9 +108,9 @@ create table router_connection
   destination integer not null,
   primary key(source, destination),
   constraint  router_connection_source_fk
-      foreign key (source) references router(id),
+      foreign key (source) references router(id) on delete cascade,
   constraint  router_connection_destination_fk
-      foreign key (destination) references router(id)
+      foreign key (destination) references router(id) on delete cascade
 );
 
 create view if not exists router_connection_view as

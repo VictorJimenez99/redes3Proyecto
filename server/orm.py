@@ -158,6 +158,7 @@ class LoginCookie(db.Model):
 
 # Router_connection Table ----------------------------------------------
 
+
 class RouterConnectionTable(db.Model):
     __tablename__ = 'router_connection'
     source = Column(Integer, ForeignKey("router.id"), primary_key=True)
@@ -176,11 +177,11 @@ class Router(db.Model):
     ip_addr = db.Column(db.String, nullable=False)
     protocol = db.Column(db.String, nullable=False)
 
-    router_conn_sources_rel = relationship("RouterConnectionTable",
+    router_conn_sources_rel = relationship("Router",
                                            secondary="router_connection",
-                                           primaryjoin="Router.id==RouterConnectionTable.source",
-                                           secondaryjoin="Router.id==RouterConnectionTable.destination",
-                                           backref="router_dest_rel", cascade="all,delete")
+                                           primaryjoin="(Router.id==RouterConnectionTable.destination)",
+                                           secondaryjoin="(Router.id==RouterConnectionTable.source)",
+                                           backref=db.backref("router_dest_rel", lazy='dynamic'))
 
     def __repr__(self):
         return f"[id: {self.id}, name: {self.name}, ip_addr: {self.ip_addr}, protocol: {self.protocol}]"
@@ -191,8 +192,6 @@ class Router(db.Model):
         print(f"adding new router to db: {router}")
         db.session.add(router)
         db.session.commit()
-
-
 
     def change_name(self, router_name: str):
         setattr(self, 'name', router_name)
@@ -212,7 +211,6 @@ class Router(db.Model):
         if len(values) == 0:
             return None
         return values
-
 
     @staticmethod
     def get_router_by_id(_id: int):
