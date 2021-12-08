@@ -213,6 +213,14 @@ class Router(db.Model):
         return values
 
     @staticmethod
+    def get_router_by_name(_name: str):
+        values: [] = Router.query.filter_by(name=_name).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+
+
+    @staticmethod
     def get_router_by_id(_id: int):
         values: [] = Router.query.filter_by(id=_id).all()
         if len(values) == 0:
