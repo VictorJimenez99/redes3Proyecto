@@ -167,6 +167,36 @@ class RouterConnectionTable(db.Model):
     def __repr__(self):
         return f"{Router.get_router_by_id(self.source).name} -> {Router.get_router_by_id(self.destination).name}"
 
+    @staticmethod
+    def new_connection(router1, router2):
+        connection = RouterConnectionTable(source=router1.id, destination=router2.id)
+        print(f"adding new router_connection to db: {connection}")
+        db.session.add(connection)
+        db.session.commit()
+
+    @staticmethod
+    def connection_exists(router1, router2):
+        values: [] = RouterConnectionTable.query.filter_by(source=router1.id, destination=router2.id).all()
+        if len(values) == 0:
+            return None
+        return values[0] is not None
+
+    @staticmethod
+    def get_connection(router1, router2):
+        values: [] = RouterConnectionTable.query.filter_by(source=router1.id, destination=router2.id).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+
+    @staticmethod
+    def drop_connection(router1, router2):
+        conn = RouterConnectionTable.get_connection(router1, router2)
+        if conn is None:
+            return
+        print(f"Deleting router_connection: {conn}")
+        db.session.delete(conn)
+        db.session.commit()
+
 
 # Router Table ------------------------------------------------
 

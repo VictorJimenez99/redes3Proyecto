@@ -1,11 +1,10 @@
 from time import time
 
 from flask import Flask, render_template, make_response, request, redirect, jsonify
-from server.orm import db, SysUser, LoginCookie, RouterUser, Router
+from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable
 from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
 from routers.router_conn import RouterConnection
-
 
 app = Flask(__name__)
 
@@ -14,19 +13,19 @@ db_name = 'database.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-
-
 db.init_app(app)
 
 if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
     def _fk_pragma_on_connect(dbapi_con, con_record):  # noqa
-        #print("turning on foreign keys for connection")
+        # print("turning on foreign keys for connection")
         dbapi_con.execute('pragma foreign_keys=ON')
+
 
     with app.app_context():
         from sqlalchemy import event
+
         event.listen(db.engine, 'connect', _fk_pragma_on_connect)
-        #print("foreign keys are already on")
+        # print("foreign keys are already on")
 
 
 # -----------------------------INDEX----------------------------------------------
@@ -434,6 +433,73 @@ def add_router():
     if possible_duplication:
         return "Duplicated router; cannot add new router", 409
     Router.new_router(name, ip_addr, protocol)
+
+    response = make_response("")
+    return response, 200
+
+
+##################################################################################
+#                               ROUTER_Connection                                #
+##################################################################################
+
+# -------------------------------ADD_router_conn -----------------------------------
+
+@app.route('/add_router_conn', methods=['POST'])
+def add_router_conn():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    source = payload.get("source")
+    dest = payload.get("destination")
+
+    if source is None or dest is None:
+        return "Unable to get params: Expected json with (source, destination)", 406
+    router_source = Router.get_router_by_name(source)
+    router_dest = Router.get_router_by_name(dest)
+    if router_dest is None or router_source is None:
+        return "Invalid Names: unregistered router", 404
+
+    if RouterConnectionTable.connection_exists(router_source, router_dest):
+        return "There already exists a connection between those routers", 409
+
+    RouterConnectionTable.new_connection(router_source, router_dest)
+
+    response = make_response("")
+    return response, 200
+
+
+# -------------------------------DELETE Router Conn-----------------------------------
+@app.route('/delete_router_conn', methods=['POST'])
+def delete_router_conn():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    source = payload.get("source")
+    dest = payload.get("destination")
+
+    if source is None or dest is None:
+        return "Unable to get params: Expected json with (source, destination)", 406
+    router_source = Router.get_router_by_name(source)
+    router_dest = Router.get_router_by_name(dest)
+    if router_dest is None or router_source is None:
+        return "Invalid Names: unregistered router", 404
+
+    if not RouterConnectionTable.connection_exists(router_source, router_dest):
+        return "A connection doesn't exist between those routers", 409
+
+    RouterConnectionTable.drop_connection(router_source, router_dest)
 
     response = make_response("")
     return response, 200
