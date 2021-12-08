@@ -20,13 +20,13 @@ db.init_app(app)
 
 if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
     def _fk_pragma_on_connect(dbapi_con, con_record):  # noqa
-        print("turning on foreign keys for connection")
+        #print("turning on foreign keys for connection")
         dbapi_con.execute('pragma foreign_keys=ON')
 
     with app.app_context():
         from sqlalchemy import event
         event.listen(db.engine, 'connect', _fk_pragma_on_connect)
-        print("foreign keys are already on")
+        #print("foreign keys are already on")
 
 
 # -----------------------------INDEX----------------------------------------------
@@ -430,7 +430,7 @@ def add_router():
 
     if name is None or ip_addr is None or protocol is None:
         return "Unable to get params: Expected json with (name, ip_addr, protocol)", 406
-    possible_duplication = Router.get_router_by_ip(ip_addr)
+    possible_duplication = Router.get_router_by_name(name)
     if possible_duplication:
         return "Duplicated router; cannot add new router", 409
     Router.new_router(name, ip_addr, protocol)
