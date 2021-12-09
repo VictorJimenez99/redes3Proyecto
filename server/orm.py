@@ -10,6 +10,8 @@ from server.random import random_word
 
 db = SQLAlchemy()
 
+
+# SysConfig -----------------------------------------
 class SysConfig(db.Model):
     __tablename__ = 'sys_config'
     key = db.Column(db.String, primary_key=True)
@@ -23,6 +25,32 @@ class SysConfig(db.Model):
             return None
         conf_item = values[0]
         return conf_item.value
+
+    @staticmethod
+    def update_value(_key, _new_value):
+        values: [] = SysConfig.query.filter_by(key=_key).all()
+        if len(values) != 1:
+            return None
+        conf_item = values[0]
+        setattr(conf_item, _key, _new_value)
+        print(f"changed {conf_item}")
+        db.session.commit()
+
+    @staticmethod
+    def get_all_json():
+        val = SysConfig.get_all()
+        data = []
+        for conf in val:
+            data.append({"key": conf.key, "value:" : conf.value, "unit": conf.unit})
+        return data;
+
+
+    @staticmethod
+    def get_all():
+        values: [] = SysConfig.query.all()
+        if len(values) == 0:
+            return []
+        return values
 
 # Sys User Table -----------------------------------------------------
 class SysUser(db.Model):
@@ -164,6 +192,8 @@ class LoginCookie(db.Model):
     @staticmethod
     def get_owner(cookie_val: str):
         cookie: LoginCookie = LoginCookie.find_cookie_by_value(cookie_val)
+        if cookie is None:
+            return None
         user_id = cookie.owner
         user = SysUser.get_user_by_id(user_id)
         return user
@@ -261,7 +291,6 @@ class Router(db.Model):
         if len(values) == 0:
             return None
         return values[0]
-
 
     @staticmethod
     def get_router_by_id(_id: int):

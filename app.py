@@ -264,8 +264,6 @@ def drop_SysUser():
 def router_list():
     if has_valid_session(request):
         routers = Router.get_router_all()
-        print(Router.get_connections_of(1))
-        print(Router.get_connections_of(2))
         user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
         return render_template("router/router_list.html", len=len(routers), users=routers, user_type=user.user_type)
     else:
@@ -438,8 +436,6 @@ def add_router():
     return response, 200
 
 
-
-
 # ---------------------------------Update Router  -------------------------------------
 
 @app.route('/update_router', methods=["POST"])
@@ -609,13 +605,9 @@ def update_topology():
 
     await_time = int(SysConfig.get_value_of("topology_test_await_time"))
 
-    json_resp = {"message": "Success updating table", "await_time": await_time }
+    json_resp = {"message": "Success updating table", "await_time": await_time}
 
     return json_resp, 200
-
-
-
-
 
 
 ##################################################################################
@@ -768,6 +760,22 @@ def drop_router_user():
     return response, 200
 
 
-# ----------------------------------MAIN ---------------------------------------------
+##################################################################################
+#                               SysConfig                                        #
+##################################################################################
+
+# ---------------------------------View SysConfig  -------------------------------
+
+@app.route("/sys_config_get_all", methods=['POST', 'GET'])
+def sys_config_get_all():
+    if request.method != 'POST' and request.method != 'GET':
+        return "not a valid method", 400
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    list_of_val = {"values": SysConfig.get_all_json()}
+    return list_of_val, 200
+
+
+# ----------------------------------MAIN -----------------------------------------
 if __name__ == '__main__':
     app.run(debug=True)
