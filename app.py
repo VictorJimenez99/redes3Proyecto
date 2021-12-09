@@ -607,7 +607,9 @@ def update_topology():
 
     db.session.commit()
 
-    return "Success updating table", 200
+    json_resp = {"message": "Success updating table", "await_time": 100 }
+
+    return json_resp, 200
 
 
 
