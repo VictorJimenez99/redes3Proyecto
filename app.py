@@ -1,7 +1,7 @@
 from time import time
 
 from flask import Flask, render_template, make_response, request, redirect, jsonify
-from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable
+from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable, SysConfig
 from server.random import random_word
 from server.session import has_valid_session, get_cookie_from_session
 from routers.router_conn import RouterConnection
@@ -607,7 +607,9 @@ def update_topology():
 
     db.session.commit()
 
-    json_resp = {"message": "Success updating table", "await_time": 100 }
+    await_time = int(SysConfig.get_value_of("topology_test_await_time"))
+
+    json_resp = {"message": "Success updating table", "await_time": await_time }
 
     return json_resp, 200
 

@@ -10,6 +10,18 @@ from server.random import random_word
 
 db = SQLAlchemy()
 
+class SysConfig(db.Model):
+    __tablename__ = 'sys_config'
+    key = db.Column(db.String, primary_key=True)
+    value = db.Column(db.String)
+    unit = db.Column(db.String)
+
+    @staticmethod
+    def get_value_of(_key: str):
+        values: [] = SysUser.query.filter_by(key=_key).all()
+        if len(values) != 1:
+            return None
+        return values[0]
 
 # Sys User Table -----------------------------------------------------
 class SysUser(db.Model):

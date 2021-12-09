@@ -122,6 +122,24 @@ from router_connection as rel
          join router r on rel.source = r.id
          join  router r2 on rel.destination = r2.id;
 
+
+create table sys_config
+(
+    key text primary key not null,
+    value text not null,
+    unit text not null
+);
+
+
+insert into sys_config values
+                              ('topology_test_await_time', '100', 'seconds');
+
+
+
+
+
+
+
 insert into router_protocol(name)
 values ('RIP');
 insert into router_protocol(name)
@@ -156,7 +174,6 @@ values (1,2), (1,3), (1,4),
        (6,2),
        (7,3), (7,5), (7,4),
        (8,4);
-
  */
 
 insert into router_user(user_name, password, salt, user_type)
