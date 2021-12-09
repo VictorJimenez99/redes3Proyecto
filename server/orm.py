@@ -18,7 +18,7 @@ class SysConfig(db.Model):
 
     @staticmethod
     def get_value_of(_key: str):
-        values: [] = SysUser.query.filter_by(key=_key).all()
+        values: [] = SysConfig.query.filter_by(key=_key).all()
         if len(values) != 1:
             return None
         return values[0]
