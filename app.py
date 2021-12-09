@@ -438,6 +438,62 @@ def add_router():
     return response, 200
 
 
+
+
+# ---------------------------------Update Router  -------------------------------------
+
+@app.route('/update_router', methods=["POST"])
+def update_router():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    name = payload.get("name")
+    ip_addr = payload.get("ip_addr")
+    protocol = payload.get("protocol")
+    if id is None or name is None or ip_addr is None or protocol is None:
+        return "Unable to get params: Expected json with (id, name, ip_addr, protocol)", 406
+    router: Router = Router.get_router_by_id(id)
+    if router is None:
+        return "Unable to get router_info", 500
+
+    router.change_name(name)
+    router.change_ip_addr(ip_addr)
+    router.change_protocol(protocol)
+    response = make_response("")
+    return response, 200
+
+
+# ---------------------------------Drop Router  -------------------------------------
+
+@app.route('/drop_router', methods=["POST"])
+def drop_router():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    if id is None:
+        return "Unable to get params: Expected json with (id)", 406
+    router: Router = Router.get_router_by_id(id)
+    if router is None:
+        return "Unable to get router_user_info", 500
+    router.drop_router(id)
+    response = make_response("")
+    return response, 200
+
+
 ##################################################################################
 #                               ROUTER_Connection                                #
 ##################################################################################
@@ -505,10 +561,12 @@ def delete_router_conn():
     return response, 200
 
 
-# ---------------------------------Update Router  -------------------------------------
+##################################################################################
+#                               TOPOLOGY                                         #
+##################################################################################
 
-@app.route('/update_router', methods=["POST"])
-def update_router():
+@app.route('/update_topology', methods=['POST'])
+def update_topology():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if request.method != 'POST':
         return "not a post method", 400
@@ -518,45 +576,42 @@ def update_router():
         return "Unauthorized", 401
 
     payload: dict = request.get_json(force=True)
-    id = payload.get("id")
-    name = payload.get("name")
-    ip_addr = payload.get("ip_addr")
-    protocol = payload.get("protocol")
-    if id is None or name is None or ip_addr is None or protocol is None:
-        return "Unable to get params: Expected json with (id, name, ip_addr, protocol)", 406
-    router: Router = Router.get_router_by_id(id)
-    if router is None:
-        return "Unable to get router_info", 500
+    routers: dict = payload.get("routers")
+    connections: dict = payload.get("connections")
 
-    router.change_name(name)
-    router.change_ip_addr(ip_addr)
-    router.change_protocol(protocol)
-    response = make_response("")
-    return response, 200
+    if routers is None or connections is None:
+        return "Unable to get params: Expected json with (routers(array), connections(array))", 406
+
+    routers_in_db = Router.get_router_all()
+
+    for rout in routers_in_db:
+        db.session.delete(rout)
+
+    db.session.commit()
+
+    for rout in routers:
+        rout_name = rout.get("name")
+        rout_ip_addr = rout.get("ip_addr")
+        rout_protocol = rout.get("protocol")
+        if rout_name is None or rout_ip_addr is None or rout_protocol is None:
+            return "Unable to get nested_params: Expected router json with (name, ip_addr, protocol)", 406
+        n_router = Router(name=rout_name, ip_addr=rout_ip_addr, protocol=rout_protocol)
+        db.session.add(n_router)
+    for con in connections:
+        router_source = Router.get_router_by_name(con.get("source"))
+        router_destination = Router.get_router_by_name(con.get("destination"))
+        if router_source is None or router_destination is None:
+            return "Unable to create connection", 409
+        connection = RouterConnectionTable(source=router_source.id, destination=router_destination.id)
+        db.session.add(connection)
+
+    db.session.commit()
+
+    return "Success updating table", 200
 
 
-# ---------------------------------Drop Router  -------------------------------------
 
-@app.route('/drop_router', methods=["POST"])
-def drop_router():
-    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
-    if request.method != 'POST':
-        return "not a post method", 400
-    if not request.is_json:
-        return "not json", 415
-    if not has_valid_session(request) and user.user_type != 1:
-        return "Unauthorized", 401
 
-    payload: dict = request.get_json(force=True)
-    id = payload.get("id")
-    if id is None:
-        return "Unable to get params: Expected json with (id)", 406
-    router: Router = Router.get_router_by_id(id)
-    if router is None:
-        return "Unable to get router_user_info", 500
-    router.drop_router(id)
-    response = make_response("")
-    return response, 200
 
 
 ##################################################################################
