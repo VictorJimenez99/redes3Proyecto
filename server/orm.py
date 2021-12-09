@@ -205,14 +205,19 @@ class LoginCookie(db.Model):
 class RouterConnectionTable(db.Model):
     __tablename__ = 'router_connection'
     source = Column(Integer, ForeignKey("router.id"), primary_key=True)
+    source_interface = Column(db.String, default="UNKNOWN")
     destination = Column(Integer, ForeignKey("router.id"), primary_key=True)
+    destination_interface = Column(db.String, default="UNKNOWN")
 
     def __repr__(self):
-        return f"{Router.get_router_by_id(self.source).name} -> {Router.get_router_by_id(self.destination).name}"
+        return f"{Router.get_router_by_id(self.source).name}(Interface {self.source_interface}) -> " \
+               f"{Router.get_router_by_id(self.destination).name}(Interface {self.destination_interface})"
 
     @staticmethod
-    def new_connection(router1, router2):
-        connection = RouterConnectionTable(source=router1.id, destination=router2.id)
+    def new_connection(router1, router2, source_interface, destination_interface):
+        connection = RouterConnectionTable(source=router1.id, destination=router2.id,
+                                           source_interface=source_interface,
+                                           destination_interface=destination_interface)
         print(f"adding new router_connection to db: {connection}")
         db.session.add(connection)
         db.session.commit()

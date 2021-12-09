@@ -105,7 +105,9 @@ create table router_protocol
 create table router_connection
 (
   source  integer not null,
+  source_interface text not null default 'UNKNOWN',
   destination integer not null,
+  destination_interface text not null default 'UNKNOWN',
   primary key(source, destination),
   constraint  router_connection_source_fk
       foreign key (source) references router(id) on delete cascade,

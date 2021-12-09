@@ -494,38 +494,6 @@ def drop_router():
 #                               ROUTER_Connection                                #
 ##################################################################################
 
-# -------------------------------ADD_router_conn -----------------------------------
-
-@app.route('/add_router_conn', methods=['POST'])
-def add_router_conn():
-    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
-    if request.method != 'POST':
-        return "not a post method", 400
-    if not request.is_json:
-        return "not json", 415
-    if not has_valid_session(request) and user.user_type != 1:
-        return "Unauthorized", 401
-
-    payload: dict = request.get_json(force=True)
-    source = payload.get("source")
-    dest = payload.get("destination")
-
-    if source is None or dest is None:
-        return "Unable to get params: Expected json with (source, destination)", 406
-    router_source = Router.get_router_by_name(source)
-    router_dest = Router.get_router_by_name(dest)
-    if router_dest is None or router_source is None:
-        return "Invalid Names: unregistered router", 404
-
-    if RouterConnectionTable.connection_exists(router_source, router_dest):
-        return "There already exists a connection between those routers", 409
-
-    RouterConnectionTable.new_connection(router_source, router_dest)
-
-    response = make_response("")
-    return response, 200
-
-
 # -------------------------------DELETE Router Conn-----------------------------------
 @app.route('/delete_router_conn', methods=['POST'])
 def delete_router_conn():
@@ -596,9 +564,14 @@ def update_topology():
     for con in connections:
         router_source = Router.get_router_by_name(con.get("source"))
         router_destination = Router.get_router_by_name(con.get("destination"))
-        if router_source is None or router_destination is None:
+        router_source_interface = con.get("source_interface")
+        router_destination_interface = con.get("destination_interface")
+        if router_source is None or router_destination is None or router_destination_interface is None or router_source_interface is None:
             return "Unable to create connection", 409
-        connection = RouterConnectionTable(source=router_source.id, destination=router_destination.id)
+        connection = RouterConnectionTable(source=router_source.id,
+                                           destination=router_destination.id,
+                                           source_interface=router_source_interface,
+                                           destination_interface=router_destination_interface)
         db.session.add(connection)
 
     db.session.commit()
