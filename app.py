@@ -574,6 +574,7 @@ def update_topology():
                                            destination_interface=router_destination_interface)
         db.session.add(connection)
 
+
     db.session.commit()
 
     await_time = int(SysConfig.get_value_of("topology_test_await_time"))
