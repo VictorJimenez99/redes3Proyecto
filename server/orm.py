@@ -21,7 +21,8 @@ class SysConfig(db.Model):
         values: [] = SysConfig.query.filter_by(key=_key).all()
         if len(values) != 1:
             return None
-        return values[0]
+        conf_item = values[0]
+        return conf_item.value
 
 # Sys User Table -----------------------------------------------------
 class SysUser(db.Model):
