@@ -750,6 +750,30 @@ def sys_config_get_all():
     return list_of_val, 200
 
 
+@app.route("/sys_config_update", methods=['POST'])
+def sys_config_update():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    key = payload.get("key")
+    new_value = payload.get("new_value")
+    if key is None or new_value is None:
+        return "Unable to get params: Expected json with (key, new_value)", 406
+
+    if SysConfig.key_exists(key):
+        SysConfig.update_value(key, new_value)
+        return f"Successfully updated {key}", 200
+    return f"Unable to locate {key}", 404
+
+
+
+
 # ----------------------------------MAIN -----------------------------------------
 if __name__ == '__main__':
     app.run(debug=True)

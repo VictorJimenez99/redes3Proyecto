@@ -2,8 +2,7 @@ from time import time
 
 from flask_sqlalchemy import SQLAlchemy
 from sha3 import sha3_512
-from sqlalchemy import ForeignKey, Column, Integer, Table
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import ForeignKey, Column, Integer
 from sqlalchemy.orm import relationship
 
 from server.random import random_word
@@ -41,9 +40,8 @@ class SysConfig(db.Model):
         val = SysConfig.get_all()
         data = []
         for conf in val:
-            data.append({"key": conf.key, "value:" : conf.value, "unit": conf.unit})
-        return data;
-
+            data.append({"key": conf.key, "value:": conf.value, "unit": conf.unit})
+        return data
 
     @staticmethod
     def get_all():
@@ -51,6 +49,14 @@ class SysConfig(db.Model):
         if len(values) == 0:
             return []
         return values
+
+    @staticmethod
+    def key_exists(_key: str):
+        values: [] = SysConfig.query.filter_by(key=_key).all()
+        if len(values) != 1:
+            return False
+        return values[0]
+
 
 # Sys User Table -----------------------------------------------------
 class SysUser(db.Model):
