@@ -157,7 +157,6 @@ insert into router_user_type(id, user_type)
 values (15,
         'admin');
 
-/*
 insert into router(name, ip_addr, protocol)
 values ('R1.red1.com', '10.1.0.254', '1'),
        ('R7.red7.com', '10.2.0.252', '1'),
@@ -167,7 +166,7 @@ values ('R1.red1.com', '10.1.0.254', '1'),
        ('R8.red6.com', '10.2.0.243', '1'),
        ('R3.red3.com', '10.2.0.244', '1'),
        ('R4.red4.com', '10.7.0.245', '1');
-insert into router_connection
+insert into router_connection(source, destination)
 values (1,2), (1,3), (1,4),
        (2,1), (2,5), (2,6),
        (3,7), (3,1),
@@ -176,7 +175,6 @@ values (1,2), (1,3), (1,4),
        (6,2),
        (7,3), (7,5), (7,4),
        (8,4);
- */
 
 insert into router_user(user_name, password, salt, user_type)
 values ('root',

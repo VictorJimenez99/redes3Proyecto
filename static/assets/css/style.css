@@ -2635,3 +2635,13 @@ section {
     font-weight: bold;
 
 }
+
+
+#cy {
+    position: absolute;
+    left: 3rem;
+    top: 8rem;
+    bottom: 3rem;
+    right: 0;
+    z-index: 1;
+}

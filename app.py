@@ -619,6 +619,41 @@ def update_topology():
     return json_resp, 200
 
 
+# --------------------------------- Json Network  -------------------------------------
+@app.route('/get_topology', methods=['POST'])
+def get_topology():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    routersConnections = RouterConnectionTable.get_all()
+    edges = []
+    convi = []
+    for con in routersConnections:
+
+        routerSource = Router.get_router_by_id(con.source)
+        routerDestination = Router.get_router_by_id(con.destination)
+        if (f'{routerSource.name}-{routerDestination.name}' not in convi and f'{routerDestination.name}-{routerSource.name}' not in convi ):
+            dic = {'data': {'id': f'{routerSource.name}-{routerDestination.name}', 'source': routerSource.name,
+                            'target': routerDestination.name, 'label': f'{con.source_interface}-{con.destination_interface}', }}
+            edges.append(dic)
+            convi.append(f'{routerSource.name}-{routerDestination.name}')
+    routers = Router.get_router_all()
+    nodes = []
+    for router in routers:
+        dic = {'data': {'id': router.name}}
+        nodes.append(dic)
+    topologyDic = {
+        'nodes': nodes,
+        'edges': edges
+    }
+    return topologyDic, 200
+
+
 ##################################################################################
 #                               ROUTERS USERS                                    #
 ##################################################################################

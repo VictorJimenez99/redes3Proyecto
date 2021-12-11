@@ -257,6 +257,14 @@ class RouterConnectionTable(db.Model):
         db.session.commit()
 
 
+    @staticmethod
+    def get_all():
+        values: [] = RouterConnectionTable.query.all()
+        if len(values) == 0:
+            return []
+        return values
+
+
 # Router Table ------------------------------------------------
 
 class Router(db.Model):
