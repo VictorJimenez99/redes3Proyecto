@@ -251,6 +251,11 @@ class RouterConnectionTable(db.Model):
         db.session.delete(conn)
         db.session.commit()
 
+    def update_interfaces(self, interface_source: str, interface_dest: str):
+        setattr(self, 'source_interface', interface_source)
+        setattr(self, 'destination_interface', interface_dest)
+        db.session.commit()
+
 
 # Router Table ------------------------------------------------
 

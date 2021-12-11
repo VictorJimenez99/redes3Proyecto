@@ -2,7 +2,7 @@ from time import time
 
 from flask import Flask, render_template, make_response, request, redirect, jsonify
 from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable, SysConfig
-from server.random import random_word
+from server.random import random_word, add_list, remove_list
 from server.session import has_valid_session, get_cookie_from_session
 from routers.router_conn import RouterConnection
 
@@ -546,12 +546,10 @@ def update_topology():
     if routers is None or connections is None:
         return "Unable to get params: Expected json with (routers(array), connections(array))", 406
 
-    routers_in_db = Router.get_router_all()
+    routers_in_db = list(map(lambda x: x.name, Router.get_router_all()))
+    print(routers_in_db)
 
-    for rout in routers_in_db:
-        db.session.delete(rout)
-
-    db.session.commit()
+    sent_routers: [] = []
 
     for rout in routers:
         rout_name = rout.get("name")
@@ -559,21 +557,58 @@ def update_topology():
         rout_protocol = rout.get("protocol")
         if rout_name is None or rout_ip_addr is None or rout_protocol is None:
             return "Unable to get nested_params: Expected router json with (name, ip_addr, protocol)", 406
+
+        it_exists: Router = Router.get_router_by_name(rout_name)
+        if it_exists:
+            print(f"saved from oblivion: {it_exists}")
+            sent_routers.append(it_exists.name)
+            continue
+
         n_router = Router(name=rout_name, ip_addr=rout_ip_addr, protocol=rout_protocol)
         db.session.add(n_router)
+        sent_routers.append(rout_name)
+
+    print(f"sent: {sent_routers}, in_db: {routers_in_db}")
+
+    routers_to_be_added = add_list(routers_in_db, sent_routers)
+    routers_to_be_removed = remove_list(routers_in_db, sent_routers)
+
+    print(f"add: {routers_to_be_added}, delete: {routers_to_be_removed}")
+
+    for add_r in routers_to_be_added:
+        active = Router.get_router_by_name(add_r)
+        print(f"adding: {add_r}")
+        db.session.add(active)
+        db.session.commit()
+    for rem_r in routers_to_be_removed:
+        active = Router.get_router_by_name(rem_r)
+        print(f"removing: {rem_r}")
+        db.session.delete(active)
+        db.session.commit()
+
     for con in connections:
         router_source = Router.get_router_by_name(con.get("source"))
         router_destination = Router.get_router_by_name(con.get("destination"))
         router_source_interface = con.get("source_interface")
         router_destination_interface = con.get("destination_interface")
+
         if router_source is None or router_destination is None or router_destination_interface is None or router_source_interface is None:
             return "Unable to create connection", 409
+
+        if RouterConnectionTable.connection_exists(router_source, router_destination):
+            possible_update: RouterConnectionTable = RouterConnectionTable.get_connection(router_source,
+                                                                                          router_destination)
+            print(f"Saved connection from oblivion: {possible_update}")
+            if possible_update.source_interface != router_source_interface or possible_update.destination_interface != router_destination_interface:
+                possible_update.update_interfaces(router_source_interface, router_destination_interface)
+                print(f"But updated interface: {possible_update}")
+            continue
+
         connection = RouterConnectionTable(source=router_source.id,
                                            destination=router_destination.id,
                                            source_interface=router_source_interface,
                                            destination_interface=router_destination_interface)
         db.session.add(connection)
-
 
     db.session.commit()
 
@@ -770,8 +805,6 @@ def sys_config_update():
         SysConfig.update_value(key, new_value)
         return f"Successfully updated {key}", 200
     return f"Unable to locate {key}", 404
-
-
 
 
 # ----------------------------------MAIN -----------------------------------------
