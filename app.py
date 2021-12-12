@@ -810,6 +810,17 @@ def drop_router_user():
 
 # ---------------------------------View SysConfig  -------------------------------
 
+@app.route('/sys_config_view')
+def sys_config_view():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if has_valid_session(request) and user.user_type == 1:
+        configs =  SysConfig.get_all()
+        return render_template("otros/configuracion_general.html", configs= configs, len = len(configs), user_type=user.user_type)
+    else:
+        return redirect("/")
+
+# --------------------------------- SysConfig list  -------------------------------
+
 @app.route("/sys_config_get_all", methods=['POST', 'GET'])
 def sys_config_get_all():
     if request.method != 'POST' and request.method != 'GET':
