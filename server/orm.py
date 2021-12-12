@@ -279,6 +279,7 @@ class Router(db.Model):
     sys_contact = db.Column(db.String)
     sys_location = db.Column(db.String)
     needs_snmp_update = db.Column(db.Boolean)
+    needs_snmp_read = db.Column(db.Boolean)
 
     router_conn_sources_rel = relationship("Router",
                                            secondary="router_connection",
@@ -294,6 +295,14 @@ class Router(db.Model):
         setattr(self, 'needs_snmp_update', True)
         db.session.commit()
 
+    def set_for_read(self):
+        setattr(self, 'needs_snmp_read', True)
+        db.session.commit()
+
+    def unset_for_read(self):
+        setattr(self, 'needs_snmp_read', False)
+        db.session.commit()
+
     def set_to_update_sys_name(self, new_name):
         setattr(self, 'sys_name', new_name)
         setattr(self, "needs_snmp_update", True)
@@ -305,16 +314,33 @@ class Router(db.Model):
         db.session.commit()
 
     def set_to_update_sys_location(self, new_location):
-        setattr(self, 'sys_contact', new_location)
+        setattr(self, 'sys_location', new_location)
         setattr(self, "needs_snmp_update", True)
         db.session.commit()
+
+    @staticmethod
+    def get_router_that_need_snmp_read():
+        values: [] = Router.query.filter_by(needs_snmp_read=True).all()
+        if len(values) == 0:
+            return None
+        return values
+
+    @staticmethod
+    def get_snmp_values(router_name):
+        router = Router.get_router_by_name(router_name)
+        if router is None:
+            return None
+        return {"sys_name": router.sys_name,
+                "sys_contact": router.sys_contact,
+                "sys_location": router.sys_location}
+
 
     @staticmethod
     def get_router_that_need_snmp_update():
         values: [] = Router.query.filter_by(needs_snmp_update=True).all()
         if len(values) == 0:
             return None
-        return values[0]
+        return values
 
     def __repr__(self):
         return f"[id: {self.id}, name: {self.name}, ip_addr: {self.ip_addr}, protocol: {self.protocol}]"

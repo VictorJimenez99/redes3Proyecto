@@ -97,7 +97,8 @@ create table router
     sys_name text       not null default 'UNKNOWN',
     sys_location text   not null default 'UNKNOWN',
     sys_contact text    not null default 'UNKNOWN',
-    needs_snmp_update boolean not null default false
+    needs_snmp_update boolean not null default false,
+    needs_snmp_read boolean not null default false
 );
 
 create table router_protocol
@@ -139,7 +140,8 @@ create table sys_config
 
 insert into sys_config values
                               ('topology_test_await_time', '100', 'seconds'),
-                              ('snmp_client_await_time', '30', 'seconds');
+                              ('snmp_client_read_await_time', '30', 'seconds'),
+                              ('snmp_client_update_await_time', '30', 'seconds');
 
 
 
@@ -162,6 +164,7 @@ insert into router_user_type(id, user_type)
 values (15,
         'admin');
 
+/*
 insert into router(name, ip_addr, protocol)
 values ('R1.red1.com', '10.1.0.254', '1'),
        ('R7.red7.com', '10.2.0.252', '1'),
@@ -180,7 +183,7 @@ values (1,2), (1,3), (1,4),
        (6,2),
        (7,3), (7,5), (7,4),
        (8,4);
-
+ */
 insert into router_user(user_name, password, salt, user_type)
 values ('root',
         '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',

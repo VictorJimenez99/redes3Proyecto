@@ -489,6 +489,8 @@ def drop_router():
     response = make_response("")
     return response, 200
 
+
+# ---------------------------------SetSNMP -------------------------------------
 @app.route('/router/set_snmp', methods=["POST"])
 def set_snmp():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
@@ -505,7 +507,7 @@ def set_snmp():
     new_value = payload.get("snmp_new_value")
     if name is None or key is None or new_value is None:
         return "Unable to get params: Expected json with (router_name, snmp_key, snmp_new_value)", 406
-    router:Router = Router.get_router_by_name(name)
+    router: Router = Router.get_router_by_name(name)
     if router is None:
         return "Invalid router Name", 404
     valid_values = ["sys_name", "sys_contact", "sys_location"]
@@ -522,6 +524,108 @@ def set_snmp():
 
     return f"Updated {key} for router: {router}", 200
 
+# ---------------------------------GetSNMPInfo -------------------------------------
+@app.route('/router/get_snmp', methods=["GET"])
+def get_snmp_info():
+    if request.method != 'GET':
+        return "not a get method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("router_name")
+
+    if name is None:
+        return "Unable to get Params: Expected JSON with (router_name)", 404
+
+    if Router.get_router_by_name(name) is None:
+        return "Unable to locate Router", 404
+
+    return Router.get_snmp_values(name), 200
+
+# ---------------------------------SetSNMPDropUpdate-------------------------------------
+# Only for backend porpoises it updates the table while dropping the client update
+# DO NOT TOUCH
+# DO NOT TOUCH
+# DO NOT TOUCH
+# DO NOT TOUCH
+@app.route('/router/set_snmp_drop_update', methods=["POST"])
+def set_snmp_drop_update():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("router_name")
+    key = payload.get("snmp_key")
+    new_value = payload.get("snmp_new_value")
+    if name is None or key is None or new_value is None:
+        return "Unable to get params: Expected json with (router_name, snmp_key, snmp_new_value)", 406
+    router: Router = Router.get_router_by_name(name)
+    if router is None:
+        return "Invalid router Name", 404
+    valid_values = ["sys_name", "sys_contact", "sys_location"]
+
+    if key not in valid_values:
+        return "Invalid snmp_key (sys_name, sys_contact, sys_location)", 404
+
+    if key == valid_values[0]:
+        setattr(router, valid_values[0], new_value)
+        db.session.commit()
+    elif key == valid_values[1]:
+        setattr(router, valid_values[1], new_value)
+        db.session.commit()
+    else:
+        setattr(router, valid_values[2], new_value)
+        db.session.commit()
+
+    setattr(router, "needs_snmp_read", False)
+    setattr(router, "needs_snmp_update", False)
+    return f"Updated {key} for router: {router} while drooping the update", 200
+
+# ---------------------------------GetSNMPNeedsUpdate-------------------------------------
+@app.route('/snmp/get_needs_update', methods=["GET"])
+def get_snmp_needs_update():
+    if request.method != 'GET':
+        return "not a post method", 400
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    li = Router.get_router_that_need_snmp_update()
+    if li is None:
+        return {"list": []}, 200
+    real_list = []
+    for router in li:
+        ob = {"router_ip": router.ip_addr, "router_name": router.name}
+        real_list.append(ob)
+
+    return {"list": real_list}, 200
+
+
+# ---------------------------------GetSNMPNeedsRead-------------------------------------
+@app.route('/snmp/get_needs_read', methods=["GET"])
+def get_snmp_needs_read():
+    if request.method != 'GET':
+        return "not a post method", 400
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    li = Router.get_router_that_need_snmp_read()
+
+    if li is None:
+        return {"list": []}, 200
+
+    real_list = []
+
+    for router in li:
+        ob = {"router_ip": router.ip_addr, "router_name": router.name}
+        real_list.append(ob)
+
+    return {"list": real_list}, 200
 ##################################################################################
 #                               ROUTER_Connection                                #
 ##################################################################################
@@ -611,7 +715,7 @@ def update_topology():
 
     for add_r in routers_to_be_added:
         active: Router = Router.get_router_by_name(add_r)
-        setattr(active, "needs_snmp_update", True)
+        setattr(active, "needs_snmp_read", True)
         # print(f"adding: {add_r}")
         db.session.add(active)
         db.session.commit()
@@ -672,9 +776,11 @@ def get_topology():
 
         routerSource = Router.get_router_by_id(con.source)
         routerDestination = Router.get_router_by_id(con.destination)
-        if (f'{routerSource.name}-{routerDestination.name}' not in convi and f'{routerDestination.name}-{routerSource.name}' not in convi ):
+        if (
+                f'{routerSource.name}-{routerDestination.name}' not in convi and f'{routerDestination.name}-{routerSource.name}' not in convi):
             dic = {'data': {'id': f'{routerSource.name}-{routerDestination.name}', 'source': routerSource.name,
-                            'target': routerDestination.name, 'label': f'{con.source_interface}-{con.destination_interface}', }}
+                            'target': routerDestination.name,
+                            'label': f'{con.source_interface}-{con.destination_interface}', }}
             edges.append(dic)
             convi.append(f'{routerSource.name}-{routerDestination.name}')
     routers = Router.get_router_all()
@@ -849,10 +955,12 @@ def drop_router_user():
 def sys_config_view():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if has_valid_session(request) and user.user_type == 1:
-        configs =  SysConfig.get_all()
-        return render_template("otros/configuracion_general.html", configs= configs, len = len(configs), user_type=user.user_type)
+        configs = SysConfig.get_all()
+        return render_template("otros/configuracion_general.html", configs=configs, len=len(configs),
+                               user_type=user.user_type)
     else:
         return redirect("/")
+
 
 # --------------------------------- SysConfig list  -------------------------------
 
