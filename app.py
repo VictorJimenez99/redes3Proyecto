@@ -489,6 +489,38 @@ def drop_router():
     response = make_response("")
     return response, 200
 
+@app.route('/router/set_snmp', methods=["POST"])
+def set_snmp():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("router_name")
+    key = payload.get("snmp_key")
+    new_value = payload.get("snmp_new_value")
+    if name is None or key is None or new_value is None:
+        return "Unable to get params: Expected json with (router_name, snmp_key, snmp_new_value)", 406
+    router:Router = Router.get_router_by_name(name)
+    if router is None:
+        return "Invalid router Name", 404
+    valid_values = ["sys_name", "sys_contact", "sys_location"]
+
+    if key not in valid_values:
+        return "Invalid snmp_key (sys_name, sys_contact, sys_location)", 404
+
+    if key == valid_values[0]:
+        router.set_to_update_sys_name(new_value)
+    elif key == valid_values[1]:
+        router.set_to_update_sys_contact(new_value)
+    else:
+        router.set_to_update_sys_location(new_value)
+
+    return f"Updated {key} for router: {router}", 200
 
 ##################################################################################
 #                               ROUTER_Connection                                #
@@ -578,7 +610,8 @@ def update_topology():
     # print(f"add: {routers_to_be_added}, delete: {routers_to_be_removed}")
 
     for add_r in routers_to_be_added:
-        active = Router.get_router_by_name(add_r)
+        active: Router = Router.get_router_by_name(add_r)
+        setattr(active, "needs_snmp_update", True)
         # print(f"adding: {add_r}")
         db.session.add(active)
         db.session.commit()

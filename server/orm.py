@@ -275,12 +275,46 @@ class Router(db.Model):
     name = db.Column(db.String, nullable=False)
     ip_addr = db.Column(db.String, nullable=False)
     protocol = db.Column(db.String, nullable=False)
+    sys_name = db.Column(db.String)
+    sys_contact = db.Column(db.String)
+    sys_location = db.Column(db.String)
+    needs_snmp_update = db.Column(db.Boolean)
 
     router_conn_sources_rel = relationship("Router",
                                            secondary="router_connection",
                                            primaryjoin="(Router.id==RouterConnectionTable.destination)",
                                            secondaryjoin="(Router.id==RouterConnectionTable.source)",
                                            backref=db.backref("router_dest_rel", lazy='dynamic'))
+
+    def unset_for_update(self):
+        setattr(self, 'needs_snmp_update', False)
+        db.session.commit()
+
+    def set_for_update(self):
+        setattr(self, 'needs_snmp_update', True)
+        db.session.commit()
+
+    def set_to_update_sys_name(self, new_name):
+        setattr(self, 'sys_name', new_name)
+        setattr(self, "needs_snmp_update", True)
+        db.session.commit()
+
+    def set_to_update_sys_contact(self, new_contact):
+        setattr(self, 'sys_contact', new_contact)
+        setattr(self, "needs_snmp_update", True)
+        db.session.commit()
+
+    def set_to_update_sys_location(self, new_location):
+        setattr(self, 'sys_contact', new_location)
+        setattr(self, "needs_snmp_update", True)
+        db.session.commit()
+
+    @staticmethod
+    def get_router_that_need_snmp_update():
+        values: [] = Router.query.filter_by(needs_snmp_update=True).all()
+        if len(values) == 0:
+            return None
+        return values[0]
 
     def __repr__(self):
         return f"[id: {self.id}, name: {self.name}, ip_addr: {self.ip_addr}, protocol: {self.protocol}]"
@@ -345,6 +379,7 @@ class Router(db.Model):
         print(f"Deleting router: {router}")
         db.session.delete(router)
         db.session.commit()
+
 
 
 # Router Users  Table ----------------------------------------------

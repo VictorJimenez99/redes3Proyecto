@@ -90,10 +90,14 @@ create table router_user
 
 create table router
 (
-    id       integer     not null primary key default 0,
-    name     text        unique not null                    default 'no name',
-    ip_addr  text        not null unique                    default '0.0.0.0',
-    protocol text        not null
+    id       integer    not null primary key default 0,
+    name     text       unique not null                    default 'no name',
+    ip_addr  text       not null unique                    default '0.0.0.0',
+    protocol text       not null,
+    sys_name text       not null default 'UNKNOWN',
+    sys_location text   not null default 'UNKNOWN',
+    sys_contact text    not null default 'UNKNOWN',
+    needs_snmp_update boolean not null default false
 );
 
 create table router_protocol
@@ -134,7 +138,8 @@ create table sys_config
 
 
 insert into sys_config values
-                              ('topology_test_await_time', '100', 'seconds');
+                              ('topology_test_await_time', '100', 'seconds'),
+                              ('snmp_client_await_time', '30', 'seconds');
 
 
 
