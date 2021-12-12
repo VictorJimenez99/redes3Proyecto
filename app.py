@@ -532,6 +532,8 @@ def delete_router_conn():
 @app.route('/update_topology', methods=['POST'])
 def update_topology():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if user is None:
+        return "Unauthorized", 401
     if request.method != 'POST':
         return "not a post method", 400
     if not request.is_json:
@@ -547,7 +549,7 @@ def update_topology():
         return "Unable to get params: Expected json with (routers(array), connections(array))", 406
 
     routers_in_db = list(map(lambda x: x.name, Router.get_router_all()))
-    print(routers_in_db)
+    # print(routers_in_db)
 
     sent_routers: [] = []
 
@@ -560,7 +562,7 @@ def update_topology():
 
         it_exists: Router = Router.get_router_by_name(rout_name)
         if it_exists:
-            print(f"saved from oblivion: {it_exists}")
+            # print(f"saved from oblivion: {it_exists}")
             sent_routers.append(it_exists.name)
             continue
 
@@ -568,21 +570,21 @@ def update_topology():
         db.session.add(n_router)
         sent_routers.append(rout_name)
 
-    print(f"sent: {sent_routers}, in_db: {routers_in_db}")
+    # print(f"sent: {sent_routers}, in_db: {routers_in_db}")
 
     routers_to_be_added = add_list(routers_in_db, sent_routers)
     routers_to_be_removed = remove_list(routers_in_db, sent_routers)
 
-    print(f"add: {routers_to_be_added}, delete: {routers_to_be_removed}")
+    # print(f"add: {routers_to_be_added}, delete: {routers_to_be_removed}")
 
     for add_r in routers_to_be_added:
         active = Router.get_router_by_name(add_r)
-        print(f"adding: {add_r}")
+        # print(f"adding: {add_r}")
         db.session.add(active)
         db.session.commit()
     for rem_r in routers_to_be_removed:
         active = Router.get_router_by_name(rem_r)
-        print(f"removing: {rem_r}")
+        # print(f"removing: {rem_r}")
         db.session.delete(active)
         db.session.commit()
 
@@ -598,10 +600,10 @@ def update_topology():
         if RouterConnectionTable.connection_exists(router_source, router_destination):
             possible_update: RouterConnectionTable = RouterConnectionTable.get_connection(router_source,
                                                                                           router_destination)
-            print(f"Saved connection from oblivion: {possible_update}")
+            # print(f"Saved connection from oblivion: {possible_update}")
             if possible_update.source_interface != router_source_interface or possible_update.destination_interface != router_destination_interface:
                 possible_update.update_interfaces(router_source_interface, router_destination_interface)
-                print(f"But updated interface: {possible_update}")
+                # print(f"But updated interface: {possible_update}")
             continue
 
         connection = RouterConnectionTable(source=router_source.id,

@@ -17,6 +17,9 @@ class SysConfig(db.Model):
     value = db.Column(db.String)
     unit = db.Column(db.String)
 
+    def __repr__(self):
+        return f"SysConf ({self.key}: {self.value} {self.unit})"
+
     @staticmethod
     def get_value_of(_key: str):
         values: [] = SysConfig.query.filter_by(key=_key).all()
@@ -31,8 +34,7 @@ class SysConfig(db.Model):
         if len(values) != 1:
             return None
         conf_item = values[0]
-        setattr(conf_item, _key, _new_value)
-        print(f"changed {conf_item}")
+        setattr(conf_item, "value", _new_value)
         db.session.commit()
 
     @staticmethod
