@@ -275,11 +275,11 @@ class Router(db.Model):
     name = db.Column(db.String, nullable=False)
     ip_addr = db.Column(db.String, nullable=False)
     protocol = db.Column(db.String, nullable=False)
-    sys_name = db.Column(db.String)
-    sys_contact = db.Column(db.String)
-    sys_location = db.Column(db.String)
-    needs_snmp_update = db.Column(db.Boolean)
-    needs_snmp_read = db.Column(db.Boolean)
+    sys_name = db.Column(db.String, default="UNKNOWN")
+    sys_contact = db.Column(db.String, default="UNKNOWN")
+    sys_location = db.Column(db.String, default="UNKNOWN")
+    needs_snmp_update = db.Column(db.Boolean, default=False)
+    needs_snmp_read = db.Column(db.Boolean, default=False)
 
     router_conn_sources_rel = relationship("Router",
                                            secondary="router_connection",
