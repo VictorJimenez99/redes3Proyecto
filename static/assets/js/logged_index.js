@@ -61,8 +61,8 @@ function cytoscapePintar(data) {
                     'line-color': '#013289',
                     'target-arrow-color': '#013289',
                     'source-arrow-color': '#013289',
-                    'source-text-offset': 60,
-                    'target-text-offset': 60,
+                    'source-text-offset': 100,
+                    'target-text-offset': 100,
                 }
             }
         ],
