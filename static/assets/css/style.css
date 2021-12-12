@@ -2645,3 +2645,26 @@ section {
     right: 0;
     z-index: 1;
 }
+
+
+.input-style input, .input-style textarea {
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 14px;
+    border-radius: 0;
+}
+
+.input-style input:focus, .input-style textarea:focus {
+    border-color: #e27846;
+}
+
+.input-style input {
+    padding: 10px 15px;
+}
+
+.input-style input, .input-style textarea {
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 14px;
+    border-radius: 0;
+}
