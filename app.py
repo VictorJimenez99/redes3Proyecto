@@ -1,7 +1,7 @@
 from time import time
 
 from flask import Flask, render_template, make_response, request, redirect, jsonify
-from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable, SysConfig
+from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable, SysConfig, Log
 from server.random import random_word, add_list, remove_list
 from server.session import has_valid_session, get_cookie_from_session
 from routers.router_conn import RouterConnection
@@ -61,8 +61,10 @@ def logout():
         return "Already logout", 208
     response = make_response("")
     value = request.cookies.get('access_key')
+    user: SysUser = LoginCookie.get_owner(value)
     LoginCookie.logout_cookie(value)
     response.delete_cookie('access_key')
+    Log.new_event("Dropped Session", user.user_name)
     return response, 200
 
 
@@ -93,6 +95,7 @@ def set_cookie():
 
     response = make_response("")
     response.set_cookie("access_key", cookie)
+    Log.new_event("Created Login Token", user_name)
 
     return response, 200
 
@@ -156,6 +159,10 @@ def add_sys_user():
 
     SysUser.add_new_sys_user(user_name, password, user_type)
 
+    value = request.cookies.get('access_key')
+    user: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Created new user: {user_name}", user.user_name)
+
     response = make_response("")
     return response, 200
 
@@ -183,6 +190,11 @@ def change_email_sys_user():
     user.change_email_and_commit(email)
 
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Changed email for: {user.user_name}, new_val: {email} ", user_log.user_name)
+
     return response, 200
 
 
@@ -209,6 +221,11 @@ def change_password_sys_user():
 
     LoginCookie.logout_cookie(get_cookie_from_session(request))  # Due to security
     response = make_response("Logged Out")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Changed password for: {user.user_name}", user_log.user_name)
+
     return response, 200
 
 
@@ -251,6 +268,11 @@ def drop_SysUser():
         return "Unable to get router_user_info", 500
     sysUser.drop_user(id)
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"dropped sys_user with id: {id}", user_log.user_name)
+
     return response, 200
 
 
@@ -338,6 +360,11 @@ def add_router_rip(router_ip: str):
         value = conn.no_ospf(router.protocol_name)
     router.change_protocol("1")
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Configured rip protocol for router {router.name}", user_log.user_name)
+
     return response, 200
 
 
@@ -370,6 +397,11 @@ def add_router_ospf(router_ip: str):
     value = conn.no_rip()
     router.change_protocol("2")
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Configured OSPF protocol for router: {router.name}", user_log.user_name)
+
     return response, 200
 
 
@@ -402,6 +434,11 @@ def add_router_eigrp(router_ip: str):
     value = conn.no_rip()
     router.change_protocol("3")
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Configured OSPF protocol for router {router.name}", user_log.user_name)
+
     return response, 200
 
 
@@ -433,6 +470,11 @@ def add_router():
     Router.new_router(name, ip_addr, protocol)
 
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Adding new router: {name}", user_log.user_name)
+
     return response, 200
 
 
@@ -463,6 +505,11 @@ def update_router():
     router.change_ip_addr(ip_addr)
     router.change_protocol(protocol)
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Updating router with params: {name}, {ip_addr}, {protocol}", user_log.user_name)
+
     return response, 200
 
 
@@ -487,6 +534,11 @@ def drop_router():
         return "Unable to get router_user_info", 500
     router.drop_router(id)
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Dropping router: {router.name}", user_log.user_name)
+
     return response, 200
 
 
@@ -522,7 +574,12 @@ def set_snmp():
     else:
         router.set_to_update_sys_location(new_value)
 
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Marked: {router.name} for SNMP Update changed: {key} for: {new_value}", user_log.user_name)
+
     return f"Updated {key} for router: {router}", 200
+
 
 # ---------------------------------GetSNMPInfo -------------------------------------
 @app.route('/router/get_snmp', methods=["GET"])
@@ -544,6 +601,7 @@ def get_snmp_info():
         return "Unable to locate Router", 404
 
     return Router.get_snmp_values(name), 200
+
 
 # ---------------------------------SetSNMPDropUpdate-------------------------------------
 # Only for backend porpoises it updates the table while dropping the client update
@@ -588,7 +646,13 @@ def set_snmp_drop_update():
     setattr(router, "needs_snmp_read", False)
     setattr(router, "needs_snmp_update", False)
     db.session.commit()
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Updated SNMP {key} for new value: {new_value} at: {router.name}", user_log.user_name)
+
     return f"Updated {key} for router: {router} while drooping the update", 200
+
 
 # ---------------------------------GetSNMPNeedsUpdate-------------------------------------
 @app.route('/snmp/get_needs_update', methods=["GET"])
@@ -633,9 +697,6 @@ def get_snmp_needs_read():
     object_to_return = {"list": real_list,
                         "sleep_time": SysConfig.get_value_of("snmp_client_read_await_time")}
     return object_to_return, 200
-
-
-
 
 
 ##################################################################################
@@ -722,6 +783,15 @@ def update_topology():
 
     routers_to_be_added = add_list(routers_in_db, sent_routers)
     routers_to_be_removed = remove_list(routers_in_db, sent_routers)
+
+    if len(routers_to_be_added) != 0:
+        log_cookie_owner = request.cookies.get('access_key')
+        user_log: SysUser = LoginCookie.get_owner(log_cookie_owner)
+        Log.new_event(f"Adding routers: {routers_to_be_added}", user_log.user_name)
+    if len(routers_to_be_removed) != 0:
+        log_cookie_owner = request.cookies.get('access_key')
+        user_log: SysUser = LoginCookie.get_owner(log_cookie_owner)
+        Log.new_event(f"Removing routers: {routers_to_be_removed}", user_log.user_name)
 
     # print(f"add: {routers_to_be_added}, delete: {routers_to_be_removed}")
 
@@ -885,6 +955,11 @@ def add_router_user():
         value = conn.add_router_user(new_router, password)
 
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Adding new router user: {new_router.user_name}", user_log.user_name)
+
     return response, 200
 
 
@@ -921,6 +996,11 @@ def update_router_user():
         conn = RouterConnection(router.ip_addr, access_user, access_password)
         value = conn.update_router_user(router_user, password)
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Updating router user: {user_name}. {password}, {user_type}", user_log.user_name)
+
     return response, 200
 
 
@@ -954,6 +1034,11 @@ def drop_router_user():
 
     router_user.drop_user_router(id)
     response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Dropping Router User: {router_user.user_name}", user_log.user_name)
+
     return response, 200
 
 
@@ -1004,8 +1089,29 @@ def sys_config_update():
 
     if SysConfig.key_exists(key):
         SysConfig.update_value(key, new_value)
+
+        value = request.cookies.get('access_key')
+        user_log: SysUser = LoginCookie.get_owner(value)
+        Log.new_event(f"Successfully updated SysConfig: {key}, with {new_value}", user_log.user_name)
+
         return f"Successfully updated {key}", 200
     return f"Unable to locate {key}", 404
+
+
+##################################################################################
+#                               LOG                                              #
+##################################################################################
+
+# ---------------------------------GET ALL-------------------------------
+
+@app.route("/log_get_all", methods=['POST', 'GET'])
+def log_get_all():
+    if request.method != 'POST' and request.method != 'GET':
+        return "not a valid method", 400
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    list_of_val = {"values": Log.get_all_json()}
+    return list_of_val, 200
 
 
 # ----------------------------------MAIN -----------------------------------------

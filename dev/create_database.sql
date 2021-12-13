@@ -10,13 +10,30 @@ create table user_type
     user_type text unique         not null default 'typeless'
 );
 
+
+create table log
+(
+    id  integer primary key not null default 1,
+    culprit text not null default 'UNKNOWN USER',
+    time integer not null default 0,
+    event text not null default 'UNKNOWN EVENT',
+    sent boolean not null default false
+);
+
+create trigger if not exists insert_new_log
+    after insert
+    on log
+begin
+update log set time = strftime('%s', 'now') where id == New.id;
+end;
+
 create table sys_user
 (
     id        integer primary key not null default 1,
     user_name text unique         not null default 'user_name',
     password  text                not null default 'password',
     salt      text                not null default 'salt',
-    email     text,
+    email     text                not null default 'no_email',
     user_type integer             not null default 1,
 
     constraint sys_user_user_type_fk

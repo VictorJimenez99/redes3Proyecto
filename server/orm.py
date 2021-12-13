@@ -1,3 +1,4 @@
+from datetime import datetime
 from time import time
 
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +9,55 @@ from sqlalchemy.orm import relationship
 from server.random import random_word
 
 db = SQLAlchemy()
+
+# Log
+class Log(db.Model):
+    __tablename__ = 'log'
+    id = db.Column(db.Integer, primary_key=True)
+    culprit = db.Column(db.String, default='UNKNOWN USER')
+    time = db.Column(db.Integer)
+    event = db.Column(db.String, default='UNKNOWN EVENT')
+    sent = db.Column(db.Boolean, default=False)
+
+    @staticmethod
+    def new_event(event: str, culprit: str):
+        value = Log(culprit=culprit, time=0, event=event, sent=False)
+        db.session.add(value)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return Log.query.all()
+
+    @staticmethod
+    def get_all_json():
+        val = Log.get_all()
+        data = []
+        for event in val:
+            time_str = datetime.utcfromtimestamp(event.time).strftime('%Y-%m-%d %H:%M:%S')
+            data.append({"id": event.id,
+                         "event": event.event,
+                         "culprit:": event.culprit,
+                         "time_str": time_str,
+                         "time_int": event.time,
+                         "sent": event.sent})
+        return data
+
+    @staticmethod
+    def get_not_sent():
+        values: [] = Log.query.filter_by(sent=False).all()
+        return values
+
+    @staticmethod
+    def change_sent_status(_id, new_status):
+        entry = Log.query.filter_by(id=_id).all()
+        if len(entry) != 1:
+            return
+        entry = entry[0]
+        setattr(entry, "sent", new_status)
+        db.session.commit()
+
+
 
 
 # SysConfig -----------------------------------------
@@ -67,7 +117,7 @@ class SysUser(db.Model):
     user_name = db.Column(db.String)
     password = db.Column(db.String)
     salt = db.Column(db.String)
-    email = db.Column(db.String)
+    email = db.Column(db.String, default="no_email@no_email.com")
     user_type = db.Column(db.Integer)
 
     cookie = relationship("LoginCookie", back_populates="owner_rel", cascade="all,delete")
