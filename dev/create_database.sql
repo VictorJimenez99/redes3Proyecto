@@ -158,6 +158,7 @@ create table sys_config
 insert into sys_config values
                               ('topology_test_await_time', '100', 'seconds'),
                               ('snmp_client_read_await_time', '30', 'seconds'),
+                              ('smtp_client_await_time_mail', '10', 'seconds'),
                               ('snmp_client_update_await_time', '30', 'seconds');
 
 

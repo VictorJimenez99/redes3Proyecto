@@ -1134,7 +1134,7 @@ def leg_get_not_sent():
         return "not a valid method", 400
     if not has_valid_session(request):
         return "Unauthorized", 401
-    list_of_val = {"values": Log.get_not_sent_json()}
+    list_of_val = {"values": Log.get_not_sent_json(), "sleep_time": SysConfig.get_value_of("smtp_client_await_time_mail")}
     return list_of_val, 200
 
 
