@@ -1114,6 +1114,7 @@ def log_view():
     else:
         return redirect("/")
 
+
 # ---------------------------------GET ALL-------------------------------
 
 @app.route("/log_get_all", methods=['POST', 'GET'])
@@ -1124,6 +1125,36 @@ def log_get_all():
         return "Unauthorized", 401
     list_of_val = {"values": Log.get_all_json()}
     return list_of_val, 200
+
+
+# ---------------------------------GET NOT SENT-------------------------------
+@app.route("/log_get_not_sent", methods=['POST', 'GET'])
+def leg_get_not_sent():
+    if request.method != 'POST' and request.method != 'GET':
+        return "not a valid method", 400
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    list_of_val = {"values": Log.get_not_sent_json()}
+    return list_of_val, 200
+
+
+@app.route("/log/set_sent_status", methods=['POST'])
+def set_sent():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request) and user.user_type != 1:
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    id = payload.get("id")
+    if id is None:
+        return "Unable to get params: Expected json with (id)", 406
+    Log.change_sent_status(id, True)
+    return "Notified", 200
+
 
 
 # ----------------------------------MAIN -----------------------------------------

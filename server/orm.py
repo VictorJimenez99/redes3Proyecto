@@ -44,6 +44,20 @@ class Log(db.Model):
         return data
 
     @staticmethod
+    def get_not_sent_json():
+        val = Log.get_not_sent()
+        data = []
+        for event in val:
+            time_str = datetime.utcfromtimestamp(event.time).strftime('%Y-%m-%d %H:%M:%S')
+            data.append({"id": event.id,
+                         "event": event.event,
+                         "culprit:": event.culprit,
+                         "time_str": time_str,
+                         "time_int": event.time,
+                         "sent": event.sent})
+        return data
+
+    @staticmethod
     def get_not_sent():
         values: [] = Log.query.filter_by(sent=False).all()
         return values
