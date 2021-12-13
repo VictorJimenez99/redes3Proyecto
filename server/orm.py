@@ -37,7 +37,7 @@ class Log(db.Model):
             time_str = datetime.utcfromtimestamp(event.time).strftime('%Y-%m-%d %H:%M:%S')
             data.append({"id": event.id,
                          "event": event.event,
-                         "culprit:": event.culprit,
+                         "culprit": event.culprit,
                          "time_str": time_str,
                          "time_int": event.time,
                          "sent": event.sent})
@@ -51,7 +51,7 @@ class Log(db.Model):
             time_str = datetime.utcfromtimestamp(event.time).strftime('%Y-%m-%d %H:%M:%S')
             data.append({"id": event.id,
                          "event": event.event,
-                         "culprit:": event.culprit,
+                         "culprit": event.culprit,
                          "time_str": time_str,
                          "time_int": event.time,
                          "sent": event.sent})
@@ -131,7 +131,7 @@ class SysUser(db.Model):
     user_name = db.Column(db.String)
     password = db.Column(db.String)
     salt = db.Column(db.String)
-    email = db.Column(db.String, default="no_email@no_email.com")
+    email = db.Column(db.String, default="UNKNOWN")
     user_type = db.Column(db.Integer)
 
     cookie = relationship("LoginCookie", back_populates="owner_rel", cascade="all,delete")
@@ -158,6 +158,15 @@ class SysUser(db.Model):
         values: [] = SysUser.query.all()
         if len(values) == 0:
             return []
+        return values
+
+    @staticmethod
+    def get_all_emails():
+        values: [] = SysUser.query.all()
+        if len(values) == 0:
+            return []
+        values = map(lambda x: x.email, values)
+        values = [x for x in values if x != "UNKNOWN"]
         return values
 
     @staticmethod

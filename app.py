@@ -64,7 +64,7 @@ def logout():
     user: SysUser = LoginCookie.get_owner(value)
     LoginCookie.logout_cookie(value)
     response.delete_cookie('access_key')
-    Log.new_event("Dropped Session", user.user_name)
+    # Log.new_event("Dropped Session", user.user_name)
     return response, 200
 
 
@@ -95,7 +95,7 @@ def set_cookie():
 
     response = make_response("")
     response.set_cookie("access_key", cookie)
-    Log.new_event("Created Login Token", user_name)
+    # Log.new_event("Created Login Token", user_name)
 
     return response, 200
 
@@ -193,7 +193,7 @@ def change_email_sys_user():
 
     value = request.cookies.get('access_key')
     user_log: SysUser = LoginCookie.get_owner(value)
-    Log.new_event(f"Changed email for: {user.user_name}, new_val: {email} ", user_log.user_name)
+    # Log.new_event(f"Changed email for: {user.user_name}, new_val: {email} ", user_log.user_name)
 
     return response, 200
 
@@ -278,7 +278,7 @@ def drop_SysUser():
 
 ##################################################################################
 #                               ROUTERS                                          #
-##################################################################################
+#################################################################################
 
 # -------------------------------View Router List -----------------------------------
 
@@ -1155,6 +1155,14 @@ def set_sent():
     Log.change_sent_status(id, True)
     return "Notified", 200
 
+@app.route("/log_get_mails", methods=['POST', 'GET'])
+def leg_get_emails():
+    if request.method != 'POST' and request.method != 'GET':
+        return "not a valid method", 400
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    list_of_val = {"emails": SysUser.get_all_emails()}
+    return list_of_val, 200
 
 
 # ----------------------------------MAIN -----------------------------------------

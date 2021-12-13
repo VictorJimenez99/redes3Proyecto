@@ -61,10 +61,10 @@ values (2,
 
 
 
-insert into sys_user(user_name, password, salt, user_type)
+insert into sys_user(user_name, password, salt, email,user_type)
 values ('root',
         '4aa15c394ae968cee7ed66134ef24d6e34a323a5aaed9d5d6095e71da60c55aad51b3974562c50db79c15ba37a2c3ea2a096e6581a562356a5783ab9a6732605',
-        'salt', 1);
+        'salt', 'jimenezvictor99@gmail.com',1);
 
 
 
