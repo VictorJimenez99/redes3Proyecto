@@ -39,7 +39,7 @@ function snmpEdit() {
 
     $.ajax({
         type: 'post',
-        url: '/set_snmp',
+        url: '/router/set_snmp',
         data: JSON.stringify(SendInfo),
         contentType: "application/json; charset=utf-8",
         traditional: true,
