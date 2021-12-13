@@ -599,13 +599,16 @@ def get_snmp_needs_update():
         return "Unauthorized", 401
     li = Router.get_router_that_need_snmp_update()
     if li is None:
-        return {"list": []}, 200
+        return {"list": [],
+                "sleep_time": SysConfig.get_value_of("snmp_client_update_await_time")}, 200
     real_list = []
     for router in li:
         ob = {"router_ip": router.ip_addr, "router_name": router.name}
         real_list.append(ob)
 
-    return {"list": real_list}, 200
+    object_to_return = {"list": real_list,
+                        "sleep_time": SysConfig.get_value_of("snmp_client_update_await_time")}
+    return object_to_return, 200
 
 
 # ---------------------------------GetSNMPNeedsRead-------------------------------------
