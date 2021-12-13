@@ -26,7 +26,6 @@
     <!-- Template Main JS File -->
     <script src="../../static/assets/js/index.js"></script>
     <script src="../../static/assets/js/navbar.js"></script>
-    <script src="../../static/assets/js/otros/configSys.js"></script>
 {% endblock %}
 
 
@@ -40,7 +39,7 @@
 
             <header class="section-header">
                 <h2>VICERI</h2>
-                <p>Configuraciones generales</p>
+                <p>Tabla de log</p>
             </header>
 
             <div class="row justify-content-center">
@@ -49,9 +48,10 @@
                         <table class="table table-striped table-hover" style="background-color: white">
                             <thead class="header-table-orange">
                             <tr style=" position: sticky; top: 0; ">
-                                <th scope="col">Key</th>
-                                <th scope="col">Valor</th>
-                                <th scope="col">Unidad</th>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Evento</th>
+                                <th scope="col">Correo</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -59,8 +59,13 @@
                                 {% set count =  i + 1 %}
                                 <tr>
                                     <th scope="row">{{ logs[i].culprit }}</th>
+                                    <td>{{ logs[i].time }}</td>
                                     <td>{{ logs[i].event }}</td>
-                                    <td>{{ logs[i].event }}</td>
+                                    <td>{% if logs[i].sent %}
+                                        &#10003;
+                                    {% else %}
+                                        &#215;
+                                    {% endif %}</td>
                                 </tr>
                             {% endfor %}
 
@@ -70,46 +75,17 @@
 
                     </div>
 
-                    {% if user_type == 1 %}
-                        <div class="col-md-12 text-center input-style">
-                            <div class="loading">Loading</div>
-                            <div class="error-message"></div>
-                            <div class="d-flex justify-content-center align-items-center" style="margin-top: 3rem">
-                                <div style="margin-right: 20px">
-                                    <select id="sys_key" class="form-control" required>
-                                        <option value="-1" selected>Seleccione el usuario de acceso</option>
-                                        {% for i in range(0, len) %}
-                                            <option value="{{ logs[i].event }}">{{ logs[i].event }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div style="margin-right: 20px">
-                                    <input id="sys_unit" type="text" class="form-control"
-                                           placeholder="Cantidad"
-                                           data-role="tagsinput"/>
-                                </div>
-                                <div>
-                                    <button type="button" onclick="ConfidEdit()">Editar
-                                    </button>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    {% endif %}
-
-
                 </div>
 
             </div>
-            </div>
+        </div>
 
     </section><!-- End Contact Section -->
     <script>
         $(document).ready(function () {
             clean_navbar();
             navbar_update(13);
-            navbar_update(14);
+            navbar_update(16);
         });
     </script>
 

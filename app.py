@@ -1,4 +1,5 @@
 from time import time
+from datetime import datetime
 
 from flask import Flask, render_template, make_response, request, redirect, jsonify
 from server.orm import db, SysUser, LoginCookie, RouterUser, Router, RouterConnectionTable, SysConfig, Log
@@ -1109,6 +1110,8 @@ def log_view():
     user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
     if has_valid_session(request):
         logs = Log.get_all()
+        for log in logs:
+            log.time = datetime.utcfromtimestamp(log.time).strftime('%Y-%m-%d %H:%M:%S')
         return render_template("otros/log_info.html", logs=logs, len=len(logs),
                                user_type=user.user_type)
     else:
