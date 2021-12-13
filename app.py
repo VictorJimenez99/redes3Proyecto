@@ -618,7 +618,8 @@ def get_snmp_needs_read():
     li = Router.get_router_that_need_snmp_read()
 
     if li is None:
-        return {"list": []}, 200
+        return {"list": [],
+                "sleep_time": SysConfig.get_value_of("snmp_client_read_await_time")}, 200
 
     real_list = []
 
@@ -628,7 +629,6 @@ def get_snmp_needs_read():
 
     object_to_return = {"list": real_list,
                         "sleep_time": SysConfig.get_value_of("snmp_client_read_await_time")}
-    print(f"returning: {object_to_return}")
     return object_to_return, 200
 
 
