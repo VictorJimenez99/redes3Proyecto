@@ -626,7 +626,11 @@ def get_snmp_needs_read():
         ob = {"router_ip": router.ip_addr, "router_name": router.name}
         real_list.append(ob)
 
-    return {"list": real_list, "sleep_time": SysConfig.get_value_of("snmp_client_read_await_time")}, 200
+    object_to_return = {"list": real_list,
+                        "sleep_time": SysConfig.get_value_of("snmp_client_read_await_time")}
+    print(f"returning: {object_to_return}")
+    return object_to_return, 200
+
 
 
 
