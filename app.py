@@ -587,6 +587,7 @@ def set_snmp_drop_update():
 
     setattr(router, "needs_snmp_read", False)
     setattr(router, "needs_snmp_update", False)
+    db.session.commit()
     return f"Updated {key} for router: {router} while drooping the update", 200
 
 # ---------------------------------GetSNMPNeedsUpdate-------------------------------------
@@ -626,6 +627,10 @@ def get_snmp_needs_read():
         real_list.append(ob)
 
     return {"list": real_list}, 200
+
+
+
+
 ##################################################################################
 #                               ROUTER_Connection                                #
 ##################################################################################
