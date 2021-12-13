@@ -57,6 +57,7 @@
                                     <th scope="col">Configurar</th>
                                     <th scope="col">Eliminar</th>
                                 {% endif %}
+                                <th scope="col">SNMP Info</th
                             </tr>
                             </thead>
                             <tbody>
@@ -79,6 +80,12 @@
                                         <td class="text-center">
                                             <a onclick="dropRouter({{ users[i].id }})" type="button"
                                                class="btn btn-danger">Eliminar
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a onclick="openModal(); setSnmpInfo('{{ users[i].sys_name }}','{{ users[i].sys_contact }}','{{ users[i].sys_location }}' )"
+                                               type="button"
+                                               class="btn btn-info">SNMP Info
                                             </a>
                                         </td>
                                     {% endif %}
@@ -133,6 +140,37 @@
 
             </div>
 
+        </div>
+        <!-- Modal -->
+        <div class="modal fade " id="modelDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+             data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">SNMP Info</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row gy-4">
+                            <div id="modal_sys_name" class="col-md-12">
+                            </div>
+                            <div class="col-md-12">
+                                <div id="modal_sys_contact" class="col-md-12">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div id="modal_sys_location" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </section><!-- End Contact Section -->

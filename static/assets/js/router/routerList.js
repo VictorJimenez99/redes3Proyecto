@@ -58,4 +58,17 @@ function snmpEdit() {
 
 }
 
+function openModal() {
+    $('#modelDelete').modal('show')
+}
 
+function closeModal() {
+    $('#modelDelete').modal('hide')
+}
+
+
+function setSnmpInfo(sys_name, sys_contact, sys_location) {
+    $("#modal_sys_name").html("sys_name: "+sys_name);
+    $("#modal_sys_contact").html("sys_contact: "+sys_contact);
+    $("#modal_sys_location").html("sys_location: "+sys_location);
+}
