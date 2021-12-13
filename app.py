@@ -1102,6 +1102,18 @@ def sys_config_update():
 #                               LOG                                              #
 ##################################################################################
 
+# ---------------------------------View log-------------------------------
+
+@app.route('/log_view')
+def log_view():
+    user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+    if has_valid_session(request):
+        logs = Log.get_all()
+        return render_template("otros/log_info.html", logs=logs, len=len(logs),
+                               user_type=user.user_type)
+    else:
+        return redirect("/")
+
 # ---------------------------------GET ALL-------------------------------
 
 @app.route("/log_get_all", methods=['POST', 'GET'])
