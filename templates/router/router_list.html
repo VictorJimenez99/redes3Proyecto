@@ -45,52 +45,91 @@
 
             <div class="row justify-content-center">
                 <div class=" col-lg-8 php-email-form">
-                    <table class="table table-striped table-hover" style="background-color: white">
-                        <thead class="header-table-orange">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Nombre Router</th>
-                            <th scope="col">Ip</th>
-                            <th scope="col">Tipo de protocolo</th>
-                            {% if user_type == 1 %}
-                                <th scope="col">Configurar</th>
-                                <th scope="col">Eliminar</th>
-                            {% endif %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for i in range(0, len) %}
-                            {% set count =  i + 1 %}
-                            <tr>
-                                <th scope="row">{{ count }}</th>
-                                <td>{{ users[i].name }}</td>
-                                <td>{{ users[i].ip_addr }}</td>
-                                <td> {% if users[i].protocol == "1" %} RIP {% elif users[i].protocol == "2" %}
-                                    OSPF {% else %} EIGRP {% endif %}</td>
-
+                    <div class="overflow-auto" style="max-height: 400px">
+                        <table class="table table-striped table-hover" style="background-color: white">
+                            <thead class="header-table-orange">
+                            <tr style=" position: sticky; top: 0; ">
+                                <th scope="col">#</th>
+                                <th scope="col">Nombre Router</th>
+                                <th scope="col">Ip</th>
+                                <th scope="col">Tipo de protocolo</th>
                                 {% if user_type == 1 %}
-                                    <td class="text-center">
-                                        <a onclick="window.location.href='/router_configure_protocol/'+{{ users[i].id }};"
-                                           type="button"
-                                           class="btn btn-success">Configurar Protocolo
-                                        </a>
-                                    </td>
-                                    <td class="text-center">
-                                        <a onclick="dropRouter({{ users[i].id }})" type="button"
-                                           class="btn btn-danger">Eliminar
-                                        </a>
-                                    </td>
+                                    <th scope="col">Configurar</th>
+                                    <th scope="col">Eliminar</th>
                                 {% endif %}
+                                <th scope="col">SNMP Info</th
                             </tr>
-                        {% endfor %}
-                        </tbody>
+                            </thead>
+                            <tbody>
+                            {% for i in range(0, len) %}
+                                {% set count =  i + 1 %}
+                                <tr>
+                                    <th scope="row">{{ count }}</th>
+                                    <td>{{ users[i].name }}</td>
+                                    <td>{{ users[i].ip_addr }}</td>
+                                    <td> {% if users[i].protocol == "1" %} RIP {% elif users[i].protocol == "2" %}
+                                        OSPF {% else %} EIGRP {% endif %}</td>
 
-                    </table>
+                                    {% if user_type == 1 %}
+                                        <td class="text-center">
+                                            <a onclick="window.location.href='/router_configure_protocol/'+{{ users[i].id }};"
+                                               type="button"
+                                               class="btn btn-success">Configurar Protocolo
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a onclick="dropRouter({{ users[i].id }})" type="button"
+                                               class="btn btn-danger">Eliminar
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a onclick="openModal(); setSnmpInfo('{{ users[i].sys_name }}','{{ users[i].sys_contact }}','{{ users[i].sys_location }}' )"
+                                               type="button"
+                                               class="btn btn-info">SNMP Info
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
                     {% if user_type == 1 %}
                         <div class="col-md-12 text-center">
                             <div class="loading">Loading</div>
                             <div class="error-message"></div>
                             <div class="sent-message">Your message has been sent. Thank you!</div>
+                            <div class="d-flex justify-content-center align-items-center"
+                                 style="margin-top: 3rem; margin-bottom: 3rem">
+                                <div style="margin-right: 20px">
+                                    <select id="router_name" class="form-control" required>
+                                        <option value="-1" selected>Seleccione el usuario de acceso</option>
+                                        {% for i in range(0, len) %}
+                                            <option value="{{ users[i].name }}">{{ users[i].name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div style="margin-right: 20px">
+                                    <select id="snmp_key" class="form-control" required>
+                                        <option value="-1" selected>Seleccione snmp OID</option>
+                                        <option value="sys_name">sys_name</option>
+                                        <option value="sys_contact">sys_contact</option>
+                                        <option value="sys_location">sys_location</option>
+
+                                    </select>
+                                </div>
+                                <div style="margin-right: 20px">
+                                    <input id="snmp_new_value" type="text" class="form-control"
+                                           placeholder="Valor"
+                                           data-role="tagsinput"/>
+                                </div>
+                                <div>
+                                    <button type="button" onclick="snmpEdit()">Actualizar
+                                    </button>
+                                </div>
+
+                            </div>
 
                             <button type="button" onclick="window.location.href='/add_view_router';">Alta de router
                             </button>
@@ -101,6 +140,37 @@
 
             </div>
 
+        </div>
+        <!-- Modal -->
+        <div class="modal fade " id="modelDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+             data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">SNMP Info</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row gy-4">
+                            <div id="modal_sys_name" class="col-md-12">
+                            </div>
+                            <div class="col-md-12">
+                                <div id="modal_sys_contact" class="col-md-12">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div id="modal_sys_location" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </section><!-- End Contact Section -->

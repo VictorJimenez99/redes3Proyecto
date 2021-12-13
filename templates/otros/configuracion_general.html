@@ -74,10 +74,10 @@
                         <div class="col-md-12 text-center input-style">
                             <div class="loading">Loading</div>
                             <div class="error-message"></div>
-                            <div class="d-flex justify-content-center align-items-center" style="margin-top: 3rem">
+                            <div class="d-flex justify-content-center align-items-center" style="margin-top: 3rem; ">
                                 <div style="margin-right: 20px">
                                     <select id="sys_key" class="form-control" required>
-                                        <option value="-1" selected>Seleccione el usuario de acceso</option>
+                                        <option value="-1" selected>Seleccione tipo de configuración</option>
                                         {% for i in range(0, len) %}
                                             <option value="{{ configs[i].key }}">{{ configs[i].key }}</option>
                                         {% endfor %}
