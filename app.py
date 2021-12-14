@@ -1137,7 +1137,8 @@ def leg_get_not_sent():
         return "not a valid method", 400
     if not has_valid_session(request):
         return "Unauthorized", 401
-    list_of_val = {"values": Log.get_not_sent_json(), "sleep_time": SysConfig.get_value_of("smtp_client_await_time_mail")}
+    list_of_val = {"values": Log.get_not_sent_json(),
+                   "sleep_time": SysConfig.get_value_of("smtp_client_await_time_mail")}
     return list_of_val, 200
 
 
@@ -1158,6 +1159,7 @@ def set_sent():
     Log.change_sent_status(id, True)
     return "Notified", 200
 
+
 @app.route("/log_get_mails", methods=['POST', 'GET'])
 def leg_get_emails():
     if request.method != 'POST' and request.method != 'GET':
@@ -1166,6 +1168,100 @@ def leg_get_emails():
         return "Unauthorized", 401
     list_of_val = {"emails": SysUser.get_all_emails()}
     return list_of_val, 200
+
+
+##################################################################################
+#                               SNMP PACKETS                                         #
+##################################################################################
+
+# --------------------------------- Json list snmp request  -------------------------------------
+@app.route('/get_json_list_snmp_pack', methods=['POST'])
+def get_json_list_snmp_pack():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    routersConnections = RouterConnectionTable.get_all()
+    list = []
+    for con in routersConnections:
+        routerSource: Router = Router.get_router_by_id(con.source)
+        dic = {'name': routerSource.name, 'ip_addr': routerSource.ip_addr, 'interface': con.source_interface}
+        list.append(dic)
+    sys_config: SysConfig = SysConfig.get_value_of("snmp_packets_await_time")
+    time = 10
+    if sys_config is not None:
+        time = int(sys_config.value)
+    response = {
+        'list': list,
+        'sleep': time
+    }
+    return response, 200
+
+
+# --------------------------------- Update packets info  -------------------------------------
+@app.route('/update_snmp_pack', methods=['POST'])
+def update_snmp_pack():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("name")
+    interface = payload.get("interface")
+    sent = payload.get("sent")
+    received = payload.get("received")
+    if interface is None or name is None or sent is None or received is None:
+        return "Unable to get params: Expected json with (name, interface, sent, received)", 406
+    router: Router = Router.get_router_by_name(name)
+    routerConnection: RouterConnectionTable = RouterConnectionTable.get_connection_r_i(router, interface)
+    routerConnection.update_sent(sent)
+    routerConnection.update_received(sent)
+    response = make_response("")
+
+    value = request.cookies.get('access_key')
+    user_log: SysUser = LoginCookie.get_owner(value)
+    Log.new_event(f"Updating snmp router packets: {name}, {interface}, enviados {sent}, recibidos {received}", user_log.user_name)
+
+    return response, 200
+
+
+##################################################################################
+#                               GRAFICAS                                         #
+##################################################################################
+
+# ---------------------------------View Graficas  -------------------------------------
+@app.route('/charts_view')
+def charts_view():
+    if has_valid_session(request):
+        user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+        users = SysUser.get_all_users()
+        routers = Router.get_router_all()
+        router_users = RouterUser.get_all_users()
+        return render_template("otros/charts.html", len_users=len(users), users=users, len_routers=len(routers),
+                               routers=routers, len_router_users=len(router_users), router_users=router_users,
+                               user_type=user.user_type)
+    else:
+        return redirect("/")
+
+
+# ---------------------------------View Graficas SNMP  -------------------------------------
+@app.route('/charts_view_snmp')
+def charts_view_snmp():
+    if has_valid_session(request):
+        user: SysUser = LoginCookie.get_owner(get_cookie_from_session(request))
+        users = SysUser.get_all_users()
+        routers = Router.get_router_all()
+        router_users = RouterUser.get_all_users()
+        return render_template("otros/chart_snmp.html", len_users=len(users), users=users, len_routers=len(routers),
+                               routers=routers, len_router_users=len(router_users), router_users=router_users,
+                               user_type=user.user_type)
+    else:
+        return redirect("/")
 
 
 # ----------------------------------MAIN -----------------------------------------

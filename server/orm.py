@@ -289,6 +289,8 @@ class RouterConnectionTable(db.Model):
     source_interface = Column(db.String, default="UNKNOWN")
     destination = Column(Integer, ForeignKey("router.id"), primary_key=True)
     destination_interface = Column(db.String, default="UNKNOWN")
+    sent = Column(Integer, default=0)
+    received = Column(Integer, default=0)
 
     def __repr__(self):
         return f"{Router.get_router_by_id(self.source).name}(Interface {self.source_interface}) -> " \
@@ -318,6 +320,12 @@ class RouterConnectionTable(db.Model):
         return values[0]
 
     @staticmethod
+    def get_connection_r_i(router1, interface):
+        values: [] = RouterConnectionTable.query.filter_by(source=router1.id, source_interface=interface).all()
+        if len(values) == 0:
+            return None
+        return values[0]
+    @staticmethod
     def drop_connection(router1, router2):
         conn = RouterConnectionTable.get_connection(router1, router2)
         if conn is None:
@@ -331,6 +339,13 @@ class RouterConnectionTable(db.Model):
         setattr(self, 'destination_interface', interface_dest)
         db.session.commit()
 
+    def update_sent(self, sent: int):
+        setattr(self, 'sent', sent)
+        db.session.commit()
+
+    def update_received(self, received: int):
+        setattr(self, 'received', received)
+        db.session.commit()
 
     @staticmethod
     def get_all():
