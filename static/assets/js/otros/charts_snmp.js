@@ -51,7 +51,8 @@ function myLoop(interface, router_name) {
                     lineChartData.labels.shift()
                 }
                 const d = new Date();
-                let time = d.getTime();
+                    let time = d.toLocaleTimeString();
+                console.log(time)
                 lineChartData.labels.push(time)
                 window.myLine.update();
             },
