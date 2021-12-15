@@ -33,11 +33,26 @@
 
 
 {% block body %}
-
     <input id="len_users" type="hidden" value="{{ len_users }}">
     <input id="len_routers" type="hidden" value="{{ len_routers }}">
     <input id="len_router_users" type="hidden" value="{{ len_router_users }}">
-    <div style="max-width: 80%; margin-top: 6rem; margin-left: auto; margin-right: auto">
+    <div style="max-width: 75%; margin-top: 6rem; margin-left: auto; margin-right: auto">
+        <div class="container">
+            <div class="col-md-4" style="margin-left: auto; margin-right: auto; margin-bottom: 10px">
+                <select id="select_router" class="form-control" required>
+                    <option value="-1" selected>Seleccione router</option>
+                    {% for i in range(0, len_routers) %}
+                        <option value="{{ routers[i].name }}">{{ routers[i].name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4" style="margin-left: auto; margin-right: auto">
+                <select id="interfaces" class="form-control" required>
+                    <option value="-1" selected>Seleccione una interfaz</option>
+                </select>
+            </div>
+        </div>
+
         <canvas id="myChart"></canvas>
     </div>
 

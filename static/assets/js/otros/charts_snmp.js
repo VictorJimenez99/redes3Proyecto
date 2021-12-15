@@ -1,10 +1,10 @@
-let len_users = null;
-let len_routers = null;
-let len_router_users = null;
+let labels = []
+let enviados = []
+let recibidos = []
+let bandera = false;
 
 
 function getLogInfo() {
-
     $.ajax({
         type: 'post',
         url: '/log_get_all',
@@ -12,7 +12,6 @@ function getLogInfo() {
         traditional: true,
         success: function (data) {
             console.log(data)
-
         },
         error: function (xhr) {
             console.log(xhr)
@@ -24,18 +23,82 @@ function getLogInfo() {
 
 var i = 1;
 
-function myLoop() {
+function myLoop(interface, router_name) {
     setTimeout(function () {
         console.log('hello');
+        $.ajax({
+            type: 'post',
+            url: '/search_router_con',
+            contentType: "application/json; charset=utf-8",
+            traditional: true,
+            data: JSON.stringify({name: this.value}),
+            success: function (data) {
+                console.log(data.conns);
+                let conns = data.conns
+                let html = "<option value=\"-1\" selected>Seleccione una interfaz</option>";
+                for (let j = 0; j < conns.length; j++) {
+                    html = html + '<option value="' + conns[j].interface + '">' + conns[j].interface + '</option>'
+                }
+                $("#interfaces").html(html);
+            },
+            error: function (xhr) {
+                console.log(xhr)
+                createAlert('Opps!', 'Something went wrong', 'Here is a bunch of text about some stuff that happened.', 'danger', true, false, 'pageMessages');
+            }
+        });
+
+
         i++;
-        if (i < 10) {
-            myLoop();
+        if (i < 5) {
+            if (bandera) {
+                myLoop(interface, router_name);
+            }
         }
     }, 3000)
 }
 
 
 $(document).ready(function () {
+
+    $('#select_router').on('change', function () {
+        labels = []
+        enviados = []
+        recibidos = []
+        bandera = false;
+        if (this.value !== "-1") {
+            $.ajax({
+                type: 'post',
+                url: '/search_router_con',
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                data: JSON.stringify({name: this.value}),
+                success: function (data) {
+                    console.log(data.conns);
+                    let conns = data.conns
+                    let html = "<option value=\"-1\" selected>Seleccione una interfaz</option>";
+                    for (let j = 0; j < conns.length; j++) {
+                        html = html + '<option value="' + conns[j].interface + '">' + conns[j].interface + '</option>'
+                    }
+                    $("#interfaces").html(html);
+                },
+                error: function (xhr) {
+                    console.log(xhr)
+                    createAlert('Opps!', 'Something went wrong', 'Here is a bunch of text about some stuff that happened.', 'danger', true, false, 'pageMessages');
+                }
+            });
+        } else {
+            let html = "<option value=\"-1\" selected>Seleccione una interfaz</option>";
+            $("#interfaces").html(html);
+        }
+    });
+    $('#interfaces').on('change', function () {
+        if (this.value !== "-1") {
+            bandera = true;
+            myLoop(this.value, $("#select_router").val());
+        } else {
+            bandera = false;
+        }
+    });
     getLogInfo();
     /*const ctx = document.getElementById('myChart').getContext('2d');
     const myChart = new Chart(ctx, {
@@ -80,36 +143,20 @@ $(document).ready(function () {
 
 
 var lineChartData = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    labels: labels,
     datasets: [{
-        label: "My First dataset",
+        label: "Enviados",
         borderColor: window.chartColors.red,
         backgroundColor: window.chartColors.red,
         fill: false,
-        data: [
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor()
-        ],
+        data: enviados,
         yAxisID: "y-axis-1",
     }, {
-        label: "My Second dataset",
+        label: "Recibidos",
         borderColor: window.chartColors.blue,
         backgroundColor: window.chartColors.blue,
         fill: false,
-        data: [
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor(),
-            randomScalingFactor()
-        ],
+        data: recibidos,
         yAxisID: "y-axis-2"
     }]
 };
@@ -124,7 +171,7 @@ window.onload = function () {
             stacked: false,
             title: {
                 display: true,
-                text: 'Chart.js Line Chart - Multi Axis'
+                text: 'Paquetes recibidos y enviados'
             },
             scales: {
                 yAxes: [{

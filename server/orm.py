@@ -325,6 +325,14 @@ class RouterConnectionTable(db.Model):
         if len(values) == 0:
             return None
         return values[0]
+
+    @staticmethod
+    def get_connections_r_s(router1):
+        values: [] = RouterConnectionTable.query.filter_by(source=router1.id).all()
+        if len(values) == 0:
+            return None
+        return values
+
     @staticmethod
     def drop_connection(router1, router2):
         conn = RouterConnectionTable.get_connection(router1, router2)

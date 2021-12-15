@@ -1199,6 +1199,25 @@ def get_json_list_snmp_pack():
     }
     return response, 200
 
+# --------------------------------- Json sent, receive packets  -------------------------------------
+@app.route('/get_sent_received_packets', methods=['POST'])
+def get_sent_received_packets():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+    payload: dict = request.get_json(force=True)
+    name = payload.get("name")
+    interface = payload.get("interface")
+    if name is None or interface is None:
+        return "Unable to get params: Expected json with (name, interface)", 406
+    router: Router = Router.get_router_by_name(name)
+    routersConnections: RouterConnectionTable = RouterConnectionTable.get_connection_r_i(router, interface)
+    list = {'sent': routersConnections.sent, 'received': routersConnections.received}
+    return list, 200
+
 
 # --------------------------------- Update packets info  -------------------------------------
 @app.route('/update_snmp_pack', methods=['POST'])
@@ -1248,6 +1267,31 @@ def charts_view():
     else:
         return redirect("/")
 
+@app.route('/search_router_con', methods=['POST'])
+def search_router_con():
+    if request.method != 'POST':
+        return "not a post method", 400
+    if not request.is_json:
+        return "not json", 415
+    if not has_valid_session(request):
+        return "Unauthorized", 401
+
+    payload: dict = request.get_json(force=True)
+    name = payload.get("name")
+    if name is None:
+        return "Unable to get params: Expected json with (name)", 406
+    router: Router = Router.get_router_by_name(name)
+    routerConnectionTable: RouterConnectionTable = RouterConnectionTable.get_connections_r_s(router)
+    list = []
+    for routerConnection in routerConnectionTable:
+        info = { 'interface':routerConnection.source_interface }
+        list.append(info)
+    dir = {
+        'conns': list
+    }
+    return dir, 200
+
+
 
 # ---------------------------------View Graficas SNMP  -------------------------------------
 @app.route('/charts_view_snmp')
@@ -1259,9 +1303,13 @@ def charts_view_snmp():
         router_users = RouterUser.get_all_users()
         return render_template("otros/chart_snmp.html", len_users=len(users), users=users, len_routers=len(routers),
                                routers=routers, len_router_users=len(router_users), router_users=router_users,
-                               user_type=user.user_type)
+                               user_type=user.user_type, search_router_con= search_router_con)
     else:
         return redirect("/")
+
+
+
+
 
 
 # ----------------------------------MAIN -----------------------------------------
