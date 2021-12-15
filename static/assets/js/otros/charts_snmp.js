@@ -28,10 +28,10 @@ function myLoop(interface, router_name) {
         console.log('hello');
         $.ajax({
             type: 'post',
-            url: '/search_router_con',
+            url: '/get_sent_received_packets',
             contentType: "application/json; charset=utf-8",
             traditional: true,
-            data: JSON.stringify({name: this.value}),
+            data: JSON.stringify({name: router_name, interface:interface}),
             success: function (data) {
                 console.log(data.conns);
                 let conns = data.conns

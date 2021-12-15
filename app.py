@@ -1175,12 +1175,8 @@ def leg_get_emails():
 ##################################################################################
 
 # --------------------------------- Json list snmp request  -------------------------------------
-@app.route('/get_json_list_snmp_pack', methods=['POST'])
+@app.route('/get_json_list_snmp_pack', methods=['POST', 'GET'])
 def get_json_list_snmp_pack():
-    if request.method != 'POST':
-        return "not a post method", 400
-    if not request.is_json:
-        return "not json", 415
     if not has_valid_session(request):
         return "Unauthorized", 401
     routersConnections = RouterConnectionTable.get_all()
@@ -1192,7 +1188,7 @@ def get_json_list_snmp_pack():
     sys_config: SysConfig = SysConfig.get_value_of("snmp_packets_await_time")
     time = 10
     if sys_config is not None:
-        time = int(sys_config.value)
+        time = int(sys_config)
     response = {
         'list': list,
         'sleep': time
@@ -1239,7 +1235,7 @@ def update_snmp_pack():
     router: Router = Router.get_router_by_name(name)
     routerConnection: RouterConnectionTable = RouterConnectionTable.get_connection_r_i(router, interface)
     routerConnection.update_sent(sent)
-    routerConnection.update_received(sent)
+    routerConnection.update_received(received)
     response = make_response("")
 
     value = request.cookies.get('access_key')
