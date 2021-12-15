@@ -21,25 +21,38 @@ function getLogInfo() {
 }
 
 
-var i = 1;
-
 function myLoop(interface, router_name) {
     setTimeout(function () {
-        console.log('hello');
         $.ajax({
             type: 'post',
             url: '/get_sent_received_packets',
             contentType: "application/json; charset=utf-8",
             traditional: true,
-            data: JSON.stringify({name: router_name, interface:interface}),
+            data: JSON.stringify({name: router_name, interface: interface}),
             success: function (data) {
-                console.log(data.conns);
-                let conns = data.conns
-                let html = "<option value=\"-1\" selected>Seleccione una interfaz</option>";
-                for (let j = 0; j < conns.length; j++) {
-                    html = html + '<option value="' + conns[j].interface + '">' + conns[j].interface + '</option>'
+                console.log(data);
+                lineChartData.datasets[0].data.push();
+                nuevosEnviados = data.sent - lineChartData.datasets[0].data[lineChartData.datasets[0].data.length - 1]
+                nuevosRecibidos = data.received - lineChartData.datasets[1].data[lineChartData.datasets[1].data.length - 1]
+                if (nuevosEnviados > 0) {
+                    lineChartData.datasets[0].data.push(data.sent)
+                } else {
+                    lineChartData.datasets[0].data.push(0)
                 }
-                $("#interfaces").html(html);
+                if (nuevosRecibidos > 0) {
+                    lineChartData.datasets[1].data.push(data.received)
+                } else {
+                    lineChartData.datasets[1].data.push(0)
+                }
+                if (lineChartData.datasets[0].data.length > 5) {
+                    lineChartData.datasets[0].data.shift()
+                    lineChartData.datasets[1].data.shift()
+                    lineChartData.labels.shift()
+                }
+                const d = new Date();
+                let time = d.getTime();
+                lineChartData.labels.push(time)
+                window.myLine.update();
             },
             error: function (xhr) {
                 console.log(xhr)
@@ -47,12 +60,9 @@ function myLoop(interface, router_name) {
             }
         });
 
+        if (bandera) {
+            myLoop(interface, router_name);
 
-        i++;
-        if (i < 5) {
-            if (bandera) {
-                myLoop(interface, router_name);
-            }
         }
     }, 3000)
 }
@@ -73,7 +83,7 @@ $(document).ready(function () {
                 traditional: true,
                 data: JSON.stringify({name: this.value}),
                 success: function (data) {
-                    console.log(data.conns);
+                    //console.log(data.conns);
                     let conns = data.conns
                     let html = "<option value=\"-1\" selected>Seleccione una interfaz</option>";
                     for (let j = 0; j < conns.length; j++) {
