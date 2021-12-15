@@ -31,8 +31,7 @@ function myLoop(interface, router_name) {
             data: JSON.stringify({name: router_name, interface: interface}),
             success: function (data) {
                 console.log(data);
-                lineChartData.datasets[0].data.push();
-                nuevosEnviados = data.sent - lineChartData.datasets[0].data[lineChartData.datasets[0].data.length - 1]
+/*                nuevosEnviados = data.sent - lineChartData.datasets[0].data[lineChartData.datasets[0].data.length - 1]
                 nuevosRecibidos = data.received - lineChartData.datasets[1].data[lineChartData.datasets[1].data.length - 1]
                 if (nuevosEnviados > 0) {
                     lineChartData.datasets[0].data.push(data.sent)
@@ -43,7 +42,9 @@ function myLoop(interface, router_name) {
                     lineChartData.datasets[1].data.push(data.received)
                 } else {
                     lineChartData.datasets[1].data.push(0)
-                }
+                }*/
+                lineChartData.datasets[0].data.push(data.sent)
+                lineChartData.datasets[1].data.push(data.received)
                 if (lineChartData.datasets[0].data.length > 5) {
                     lineChartData.datasets[0].data.shift()
                     lineChartData.datasets[1].data.shift()
